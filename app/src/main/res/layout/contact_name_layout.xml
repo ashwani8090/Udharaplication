@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:layout_margin="0.8dp"
+    android:background="#FDFDFD">
+
+    <TextView
+        android:id="@+id/nameAdapter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/name_of_contact"
+        android:textStyle="bold"
+        android:textColor="@color/gray"
+        android:fontFamily="cursive"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
+        android:inputType="datetime"
+        android:text="12/12/19"
+        android:textSize="10sp" />
+
+    <TextView
+        android:id="@+id/phoneAdapter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/nameAdapter"
+        android:text="@string/phone_number"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_alignBaseline="@+id/date"
+        android:textColor="@color/gray"
+
+        android:textSize="10sp" />
+
+
+</RelativeLayout>

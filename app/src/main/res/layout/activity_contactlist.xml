@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativelayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".contactlist">
+
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/coordinatorlayout"
+        >
+
+
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#ECE5E5"
+
+            >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/logoutButton"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/logout"
+                    android:padding="7dp"
+                    android:drawableStart="@drawable/logouticon" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/searchbar"
+                    android:drawableStart="@drawable/ic_search_black_24dp"
+                    android:paddingStart="30dp" />
+
+
+            </RelativeLayout>
+
+
+        </android.support.v7.widget.Toolbar>
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="50dp"
+            android:paddingTop="10dp"
+            android:scrollbars="vertical"
+            android:paddingStart="10dp"
+
+
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+
+        </android.support.v7.widget.RecyclerView>
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/floatingActionButtonAddcontact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="60dp"
+            android:clickable="true"
+            app:backgroundTint="#E4E1E1"
+            app:srcCompat="@drawable/addcontact" />
+
+
+
+        <include layout="@layout/bottomsheetaddcontact"/>
+
+
+
+
+    </android.support.design.widget.CoordinatorLayout>
+
+
+
+
+</RelativeLayout>

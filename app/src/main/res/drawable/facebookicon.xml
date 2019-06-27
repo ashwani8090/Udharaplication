@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item>
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="0.5dp"
+                android:color="#524F4F" />
+            <corners android:radius="20dp"/>
+            <size
+                android:width="90dp"
+                android:height="40dp" />
+        </shape>
+
+    </item>
+    <item
+        android:width="30dp"
+        android:height="30dp"
+        android:left="1dp"
+        android:top="2dp">
+        <bitmap android:src="@drawable/fb"
+            />
+    </item>
+
+
+</layer-list>
