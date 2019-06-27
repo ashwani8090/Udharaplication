@@ -36,6 +36,10 @@ public class ItemsTaken extends AppCompatActivity {
 
 
                     case R.id.additemtolist:
+                        if (bottomSheetBehavior.getState()==BottomSheetBehavior.STATE_COLLAPSED)
+                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                        else if (bottomSheetBehavior.getState()==BottomSheetBehavior.STATE_EXPANDED)
+                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
                     break;
                     case R.id.searchN:
