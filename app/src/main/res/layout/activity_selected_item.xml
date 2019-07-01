@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="2dp"
+
+    tools:context=".SelectedItemActivity">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/Asset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/textview"
+            android:gravity="center"
+            android:text="Asset Name"
+            android:textColor="#000"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/Assetname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/Asset"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@+id/Asset"
+            android:background="@drawable/textview"
+            android:padding="10dp"
+            android:paddingStart="10dp"
+            android:textColor="#E91E63"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/AmountAssett"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/Asset"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/textview"
+            android:gravity="center"
+            android:text="Amount"
+            android:textColor="#000"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/AmountAsset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Assetname"
+            android:layout_alignTop="@+id/AmountAssett"
+            android:layout_toRightOf="@+id/AmountAssett"
+            android:background="@drawable/textview"
+            android:padding="10dp"
+            android:paddingStart="10dp"
+            android:inputType="number"
+            android:focusableInTouchMode="false"
+            android:cursorVisible="false"
+            android:textColor="#E91E63"
+            android:textSize="15sp" />
+
+
+        <TextView
+            android:id="@+id/Amountwrite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/Assetname"
+            android:layout_alignBaseline="@+id/AmountAsset"
+            android:layout_marginEnd="10dp"
+            android:layout_alignParentRight="true"
+            android:backgroundTint="#00FFFFFF"
+            android:background="@drawable/logout"
+            android:drawableEnd="@drawable/ic_change" />
+
+
+
+
+
+
+
+
+
+        <TextView
+            android:id="@+id/Description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/AmountAssett"
+            android:layout_margin="10dp"
+            android:text="Description"
+            android:textColor="#000"
+            android:textSize="15sp" />
+
+
+        <TextView
+            android:id="@+id/DescriptionEditAsset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/Description"
+            android:layout_margin="10dp"
+            android:background="#fff"
+            android:padding="10dp"
+            android:paddingStart="10dp"
+            android:text="nothing mentioned.."
+            android:textDirection="ltr"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/doneSelected"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@+id/DescriptionEditAsset"
+            android:layout_margin="10dp"
+            android:background="@drawable/textview"
+            android:backgroundTint="#F44336"
+            android:text="Done"
+            android:textColor="#fff"
+            android:textSize="20sp" />
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

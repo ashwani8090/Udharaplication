@@ -1,21 +1,52 @@
 package com.example.udharaplication;
 
-import android.content.res.ColorStateList;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.MenuItem;
-import android.widget.RelativeLayout;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class ItemsTaken extends AppCompatActivity {
 
-
+    private Integer Left=0;
+    private List<ConstructorDate> dateArraylist=new ArrayList<>();
+    private AlertDialog.Builder alert;
+    private CoordinatorLayout coordinatorLayout;
+    private AdapterDates adapterDates;
+    private RecyclerView recyclerView;
+    private LinearLayoutManager linearLayoutManager;
+    private List<ConstructorDate> arraylist = new ArrayList<>();
+    private Intent intent;
+    private String phone;
+    private DatabaseDates itemDatesPhone,databaseDates;
+    private Boolean isSearch = false;
+    private EditText Searching;
+    private TextView TotalAmountLeft;
     private BottomNavigationView bottomNavigationView;
-    private RelativeLayout relativeLayout;
-    private BottomSheetBehavior bottomSheetBehavior;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,9 +54,25 @@ public class ItemsTaken extends AppCompatActivity {
         setContentView(R.layout.activity_items_taken);
 
 
+     //   arraylist.clear();
+
+        Searching = findViewById(R.id.searching);
+        coordinatorLayout = findViewById(R.id.coordinatorlayout);
         bottomNavigationView = findViewById(R.id.bottomNavigation);
-        relativeLayout=findViewById(R.id.bottomNavigationsheet);
-        bottomSheetBehavior=BottomSheetBehavior.from(relativeLayout);
+        TotalAmountLeft=findViewById(R.id.TotalAmountItem);
+        recyclerView = findViewById(R.id.recyclerDated);
+        linearLayoutManager = new LinearLayoutManager(this);
+
+        Searching.setVisibility(View.INVISIBLE);
+
+
+        intent = getIntent();
+        phone = intent.getStringExtra("PhoneNumber");
+
+      databaseDates= itemDatesPhone = new DatabaseDates(this);
+
+
+        enableSwipe();
 
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -36,14 +83,30 @@ public class ItemsTaken extends AppCompatActivity {
 
 
                     case R.id.additemtolist:
-                        if (bottomSheetBehavior.getState()==BottomSheetBehavior.STATE_COLLAPSED)
-                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                        else if (bottomSheetBehavior.getState()==BottomSheetBehavior.STATE_EXPANDED)
-                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                        String DateString = DateFormat.getDateTimeInstance().format(new Date());
 
-                    break;
+
+                        /***************correct this problem*****************************************************/
+                        boolean b = itemDatesPhone.insertDate(DateString, phone);
+                        onStart();
+                        break;
+
+
                     case R.id.searchN:
-                    break;
+                        if (!isSearch) {
+                            Searching.setVisibility(View.VISIBLE);
+                            Animation animation = AnimationUtils.loadAnimation(ItemsTaken.this, R.anim.scaling_anime);
+                            Searching.setAnimation(animation);
+                            isSearch = true;
+                        } else {
+                            Searching.setVisibility(View.INVISIBLE);
+                            Animation animation = AnimationUtils.loadAnimation(ItemsTaken.this, R.anim.returnscaling_anim);
+                            Searching.setAnimation(animation);
+
+                            isSearch = false;
+                        }
+
+                        break;
 
                 }
 
@@ -53,4 +116,158 @@ public class ItemsTaken extends AppCompatActivity {
         });
 
     }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        arraylist.clear();
+
+        Cursor cursor = itemDatesPhone.GetALlDate(phone);
+        if (cursor.getCount() == 0) {
+            Toast.makeText(this, "nothing to show", Toast.LENGTH_SHORT).show();
+            return;
+        } else {
+
+            while (cursor.moveToNext()) {
+
+                ConstructorDate constructorlList = new
+                        ConstructorDate(cursor.getString(0),
+                        cursor.getString(1),
+                        cursor.getInt(2),
+                        cursor.getInt(3),
+                        cursor.getInt(4),
+                        cursor.getString(5));
+
+                arraylist.add(constructorlList);
+
+
+            }
+
+
+
+
+            adapterDates = new AdapterDates(this, arraylist);
+            recyclerView.setLayoutManager(linearLayoutManager);
+            recyclerView.setAdapter(adapterDates);
+
+
+            DatesTable();
+            TotalAmountLeft.setText("Rs. "+Left);
+
+
+
+        }
+
+
+    }
+
+
+    private void enableSwipe() {
+
+
+        SwipeToDeleteCallback swipeToDeleteCallback = new SwipeToDeleteCallback(this) {
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+
+                final int position = viewHolder.getAdapterPosition();
+                final ConstructorDate item = (ConstructorDate) adapterDates.getData().get(position);
+
+
+                final Snackbar snackbar = Snackbar
+                        .make(coordinatorLayout, "Item was removed from the list.", Snackbar.LENGTH_LONG);
+                snackbar.setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+
+                        itemDatesPhone.InsertAfterDelete(item.getDATE(),
+                                item.getPHONE(),
+                                item.getRECIEVED(),
+                                item.getLEFTP(),
+                                item.getTOTAL(),
+                                item.getPAID());
+                        adapterDates.restoreItem(item, position);
+                        recyclerView.scrollToPosition(position);
+
+                    }
+                });
+
+                snackbar.setActionTextColor(Color.YELLOW);
+                adapterDates.removeItem(position);
+
+                alert = new AlertDialog.Builder(ItemsTaken.this);
+
+                alert.setMessage("Do you want to delete?").setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        Integer integer = itemDatesPhone.DeleteDate(item.getDATE());
+                        if (integer > 0) {
+                            Toast.makeText(mContext, "Deleted", Toast.LENGTH_SHORT).show();
+                            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                            vibrator.vibrate(200);
+                            snackbar.show();
+                        } else {
+                            Toast.makeText(mContext, "Not Deleted", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        alert.setCancelable(true);
+                        adapterDates.notifyDataSetChanged();
+                        arraylist.add(position, item);
+                        adapterDates.notifyDataSetChanged();
+                    }
+                }).show();
+
+
+            }
+        };
+
+        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeToDeleteCallback);
+        itemTouchhelper.attachToRecyclerView(recyclerView);
+    }
+
+
+
+
+    public void DatesTable() {
+
+        Left=0;
+        dateArraylist.clear();
+        Cursor  cursor1=databaseDates.GetALlDate(phone);
+        if (cursor1.getCount()==0){
+            Toast.makeText(this, "Notthing to show", Toast.LENGTH_SHORT).show();
+        }
+        else{
+
+            while (cursor1.moveToNext()){
+
+                ConstructorDate constructorDate=new ConstructorDate(cursor1.getString(0),
+                        cursor1.getString(1),
+                        cursor1.getInt(2),
+                        cursor1.getInt(3),
+                        cursor1.getInt(4),
+                        cursor1.getString(5));
+
+                dateArraylist.add(constructorDate);
+            }
+
+
+            for (ConstructorDate date:dateArraylist)
+               Left+=date.getLEFTP();
+
+        }
+
+
+
+    }
+
+
+
 }

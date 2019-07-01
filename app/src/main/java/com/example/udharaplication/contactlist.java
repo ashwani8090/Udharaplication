@@ -35,6 +35,8 @@ import java.util.List;
 
 public class contactlist extends AppCompatActivity {
 
+
+    private DatabaseItems datesPhone;
     private RecyclerView recyclerView;
     private AdapterContact adapterContact;
     private CoordinatorLayout coordinatorLayout;
@@ -56,6 +58,7 @@ public class contactlist extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contactlist);
 
+
         logout = findViewById(R.id.logoutButton);
         Name = findViewById(R.id.nameofcontact);
         PhoneNumber = findViewById(R.id.phoneNumber);
@@ -71,6 +74,7 @@ public class contactlist extends AppCompatActivity {
         linearLayoutManager = new LinearLayoutManager(this);
 
 
+        datesPhone=new DatabaseItems(this);
         dataBaseHelperClass = new DataBaseHelperClass(this);
 
         //database code
@@ -94,7 +98,7 @@ public class contactlist extends AppCompatActivity {
                 } else {
                     NameString = Name.getText().toString().trim().substring(0, 1).toUpperCase() + Name.getText().toString().trim().substring(1);
 
-                    boolean isInserted = dataBaseHelperClass.insertData(PhoneString, DateString, NameString);
+                    boolean isInserted = dataBaseHelperClass.insertData(PhoneString, NameString);
                     if (isInserted) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                             onStart();
@@ -159,7 +163,6 @@ public class contactlist extends AppCompatActivity {
         });
 
 
-        /******************************************adding Contact***************************************/
 
 
     }
@@ -181,7 +184,7 @@ public class contactlist extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
 
-                        dataBaseHelperClass.insertData(item.getPhone(), item.getDate(), item.getName());
+                        dataBaseHelperClass.insertData(item.getPhone(), item.getName());
                         adapterContact.restoreItem(item, position);
                         recyclerView.scrollToPosition(position);
 
@@ -244,6 +247,7 @@ public class contactlist extends AppCompatActivity {
         arrayList.clear();
 
         Cursor cursor = dataBaseHelperClass.getAllData();
+
         if (cursor.getCount() == 0) {
             Toast.makeText(this, "nothing to show", Toast.LENGTH_SHORT).show();
             return;
@@ -252,7 +256,9 @@ public class contactlist extends AppCompatActivity {
             StringBuffer stringBuffer = new StringBuffer();
             while (cursor.moveToNext()) {
 
-                ContactConstructorlList constructorlList = new ContactConstructorlList(cursor.getString(0), cursor.getString(1), cursor.getString(2));
+                ContactConstructorlList constructorlList = new
+                        ContactConstructorlList(cursor.getString(0),
+                        cursor.getString(1));
                 arrayList.add(constructorlList);
 
 

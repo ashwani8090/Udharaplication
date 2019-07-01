@@ -2,40 +2,92 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ItemsTaken">
 
-   <FrameLayout
-       android:id="@+id/frame"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    <FrameLayout
+        android:id="@+id/frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
-       <android.support.design.widget.BottomNavigationView
-           android:id="@+id/bottomNavigation"
-           android:layout_width="200dp"
-           android:background="@drawable/navigationbackground"
-           android:backgroundTint="#D8313030"
-           android:layout_height="wrap_content"
-           android:layout_gravity="center_horizontal|bottom"
-           android:layout_marginBottom="20dp"
-           app:itemTextColor="@color/selectednavigation"
-           app:itemIconTint="@color/selectednavigation"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#ECE5E5">
 
-           app:menu="@menu/navigationbottom">
+            <TextView
+                android:id="@+id/TotalAmountItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="10dp"
+                android:background="@drawable/textview"
+                android:gravity="center"
+                android:padding="2dp"
+                android:text="Rs.0"
 
-
-       </android.support.design.widget.BottomNavigationView>
-
-
-
-   </FrameLayout>
-
+                android:textColor="#000"
+                android:textSize="15sp" />
 
 
-    <include layout="@layout/itemsbottomsheet"/>
+            <TextView
+                android:id="@+id/online"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:drawableStart="@drawable/logouticon" />
+
+
+        </RelativeLayout>
+
+
+        <android.support.design.widget.BottomNavigationView
+            android:id="@+id/bottomNavigation"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/navigationbackground"
+            android:backgroundTint="#D8313030"
+            app:itemIconTint="@color/selectednavigation"
+            app:itemTextColor="@color/selectednavigation"
+            app:menu="@menu/navigationbottom">
+
+        </android.support.design.widget.BottomNavigationView>
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerDated"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="51dp">
+
+
+        </android.support.v7.widget.RecyclerView>
+
+
+    </FrameLayout>
+
+
+    <EditText
+        android:id="@+id/searching"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="5dp"
+        android:background="@drawable/navigationbackground"
+        android:backgroundTint="#D00F0F0F"
+        android:drawableEnd="@drawable/ic_search_black_24dp"
+        android:hint="Search here..."
+        android:paddingStart="15dp"
+        android:paddingEnd="10dp"
+        android:textColorHint="#fff"
+        android:textSize="15sp"
+        android:visibility="invisible" />
 
 
 </android.support.design.widget.CoordinatorLayout>

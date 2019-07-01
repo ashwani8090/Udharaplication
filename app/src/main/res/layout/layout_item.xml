@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/card1"
+    android:id="@+id/card4"
     android:layout_width="match_parent"
     android:layout_height="80dp"
     android:layout_margin="0.8dp"
     android:background="@drawable/textview"
-
     android:backgroundTint="#C3C3C9">
 
     <TextView
-        android:id="@+id/nameAdapter"
+        android:id="@+id/item_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="10dp"
         android:fontFamily="cursive"
         android:text="@string/name_of_contact"
         android:textColor="@color/gray"
@@ -22,16 +20,22 @@
         android:textStyle="bold" />
 
 
+
+
     <TextView
-        android:id="@+id/phoneAdapter"
+        android:id="@+id/item_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/nameAdapter"
-        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginTop="20dp"
-        android:text="@string/phone_number"
+        android:fontFamily="cursive"
+        android:layout_alignParentRight="true"
+        android:text="0"
         android:textColor="@color/gray"
-        android:textSize="10sp" />
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+
 
 
 </RelativeLayout>

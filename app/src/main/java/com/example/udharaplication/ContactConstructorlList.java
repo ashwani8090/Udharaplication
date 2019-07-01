@@ -2,14 +2,13 @@ package com.example.udharaplication;
 
 public class ContactConstructorlList {
 
-    private String Phone,Date,Name;
+    private String Phone,Name;
 
     public ContactConstructorlList() {
     }
 
-    public ContactConstructorlList(String phone, String date, String name) {
+    public ContactConstructorlList(String phone,  String name) {
         Phone = phone;
-        Date = date;
         Name = name;
     }
 
@@ -21,13 +20,7 @@ public class ContactConstructorlList {
         Phone = phone;
     }
 
-    public String getDate() {
-        return Date;
-    }
 
-    public void setDate(String date) {
-        Date = date;
-    }
 
     public String getName() {
         return Name;
