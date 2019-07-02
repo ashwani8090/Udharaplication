@@ -103,7 +103,7 @@
             android:textSize="15sp" />
 
 
-        <TextView
+        <EditText
             android:id="@+id/DescriptionEditAsset"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -112,9 +112,27 @@
             android:background="#fff"
             android:padding="10dp"
             android:paddingStart="10dp"
+            android:focusableInTouchMode="false"
+            android:cursorVisible="false"
             android:text="nothing mentioned.."
             android:textDirection="ltr"
             android:textSize="15sp" />
+
+
+
+
+        <TextView
+            android:id="@+id/Descriptionwrite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/Description"
+            android:layout_alignBaseline="@+id/DescriptionEditAsset"
+            android:layout_marginEnd="10dp"
+            android:layout_alignParentRight="true"
+            android:backgroundTint="#00FFFFFF"
+            android:background="@drawable/logout"
+            android:drawableEnd="@drawable/ic_change" />
+
 
         <Button
             android:id="@+id/doneSelected"

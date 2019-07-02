@@ -8,10 +8,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DataBaseHelperClass extends SQLiteOpenHelper {
 
-    public static final String DATABASE_NAME="Contact.db";
-    public static final String TABLE_NAME="CONTACTS";
-    public static final String PHONE_NO="PHONE";
-    public static final String NAME_OF_CONTACT="NAME";
+    private static final String DATABASE_NAME="Contact.db";
+    private static final String TABLE_NAME="CONTACTS";
+    private static final String PHONE_NO="PHONE";
+    private static final String NAME_OF_CONTACT="NAME";
 
 
 
@@ -65,11 +65,11 @@ public class DataBaseHelperClass extends SQLiteOpenHelper {
     }
 
 
-    public  boolean UpDatePhone(String phone){
+    public  boolean UpDatePhone(String phone,String newphone){
 
         SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
         ContentValues contentValues=new ContentValues();
-        contentValues.put(PHONE_NO,phone);
+        contentValues.put(PHONE_NO,newphone);
         sqLiteDatabase.update(TABLE_NAME,contentValues, "PHONE=?",new String[]{phone});
         return  true;
 

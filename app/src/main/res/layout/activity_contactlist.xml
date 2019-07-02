@@ -9,10 +9,9 @@
 
 
     <android.support.design.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:id="@+id/coordinatorlayout"
-        >
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
 
         <android.support.v7.widget.Toolbar
@@ -32,17 +31,49 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:background="@drawable/logout"
-                    android:padding="7dp"
-                    android:drawableStart="@drawable/logouticon" />
+                    android:drawableStart="@drawable/dots_two"
+                    android:padding="7dp" />
 
-                <Button
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/seach_icon"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/searchbar"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/search_layout"
+                    android:backgroundTint="#A09D9D"
                     android:drawableStart="@drawable/ic_search_black_24dp"
-                    android:paddingStart="30dp" />
+                    android:paddingStart="15dp" />
+
+
+                <RelativeLayout
+                    android:id="@+id/searching_relative"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    android:visibility="invisible">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/search_bar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_margin="3dp"
+                        android:background="@drawable/searchbar"
+                        android:completionThreshold="1"
+                        android:elevation="2dp"
+                        android:backgroundTint="#CD555353"
+                        android:hint="Search here..."
+                        android:drawableEnd="@drawable/ic_close_black_24dp"
+                        android:inputType="textAutoComplete|textAutoCorrect|textNoSuggestions"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="10dp" />
+
+
+
+
+                </RelativeLayout>
 
 
             </RelativeLayout>
@@ -56,10 +87,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="50dp"
+            android:layout_marginEnd="5dp"
+            android:paddingStart="5dp"
             android:paddingTop="10dp"
             android:scrollbars="vertical"
-            android:paddingStart="5dp"
-            android:layout_marginEnd="5dp"
 
 
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -80,15 +111,10 @@
             app:srcCompat="@drawable/addcontact" />
 
 
-
-        <include layout="@layout/bottomsheetaddcontact"/>
-
-
+        <include layout="@layout/bottomsheetaddcontact" />
 
 
     </android.support.design.widget.CoordinatorLayout>
-
-
 
 
 </RelativeLayout>

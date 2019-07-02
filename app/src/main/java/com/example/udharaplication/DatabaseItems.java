@@ -115,14 +115,52 @@ public class DatabaseItems extends SQLiteOpenHelper {
     }
 
 
-    public boolean upDate(Integer ID,Integer amount ) {
+    public boolean upDate(Integer ID,Integer amount,String des ) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(AMOUNT,amount);
+        contentValues.put(DESCRIPTION,des);
         db.update(TABLE_NAME, contentValues, "ID=?", new String[]{String.valueOf(ID)});
         return true;
 
     }
+
+
+
+    public  boolean UpDatePhone(String phone,String newphone){
+
+        SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
+        ContentValues contentValues=new ContentValues();
+        contentValues.put(PHONE,newphone);
+        sqLiteDatabase.update(TABLE_NAME,contentValues, "PHONE=?",new String[]{phone});
+        return  true;
+
+    }
+
+
+
+    public Cursor GetAllwithPhone(String phone) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_NAME + " where PHONE=?", new String[]{String.valueOf(phone)});
+        return cursor;
+    }
+
+
+    public Cursor GetItemWithPhone(String Item){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select PHONE from " + TABLE_NAME + " where ITEM_NAME=?",
+                new String[]{Item});
+        return cursor;
+    }
+    public Cursor GetDesWithPhone(String des){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select PHONE from " + TABLE_NAME + " where DESCRIPTION=?",
+                new String[]{des});
+        return cursor;
+    }
+
+
+
 
 }

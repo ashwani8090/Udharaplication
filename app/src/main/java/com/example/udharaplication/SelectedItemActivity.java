@@ -19,15 +19,16 @@ import java.util.List;
 
 public class SelectedItemActivity extends AppCompatActivity {
 
+    private String des="";
     private   Integer amount=0;
     private static ColorStateList color = null;
-    private TextView Assetname, Amount, Description,Amountwrite;
+    private TextView Assetname, Amount, Description,Amountwrite,Descriptionwrite;
     private DatabaseItems databaseItems;
     private Intent intent;
     private Integer ID;
     private List<ConstructorItems> arraylist = new ArrayList<>();
     private ConstructorItems constructorItems;
-    private Boolean c1 = false, c2 = false,c3=false;
+    private Boolean c1 = false, c2 = false,c3=false,c4=false;
     private Button DoneSelected;
 
 
@@ -41,6 +42,7 @@ public class SelectedItemActivity extends AppCompatActivity {
         Description = findViewById(R.id.DescriptionEditAsset);
         Amountwrite=findViewById(R.id.Amountwrite);
         DoneSelected=findViewById(R.id.doneSelected);
+        Descriptionwrite=findViewById(R.id.Descriptionwrite);
 
         intent = getIntent();
         ID = intent.getIntExtra("ID", 0);
@@ -59,8 +61,6 @@ public class SelectedItemActivity extends AppCompatActivity {
                     Amount.setCursorVisible(true);
                     Amount.setFocusableInTouchMode(true);
                     Amount.setTextColor(Color.GRAY);
-                    Amount.setHint("Change amount");
-                    Amount.setText(""+0);
                     DoneSelected.setBackgroundTintList(ColorStateList.valueOf(Color.BLUE));
 
                     c2 = true;
@@ -93,13 +93,14 @@ public class SelectedItemActivity extends AppCompatActivity {
 
                String value=Amount.getText().toString().trim();
                amount= Integer.valueOf(value);
+               des=Description.getText().toString().trim();
 
                if (( ! value.isEmpty())&&(DoneSelected.getBackgroundTintList()==ColorStateList.valueOf(Color.BLUE)) )  {
 
-                boolean check=   databaseItems.upDate(ID,amount);
+                boolean check=  databaseItems.upDate(ID,amount,des);
                 if (check){
                     onStart();
-                    Toast.makeText(SelectedItemActivity.this, "Amount Updated", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SelectedItemActivity.this, "Updated", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     Toast.makeText(SelectedItemActivity.this, "try Again", Toast.LENGTH_SHORT).show();
@@ -111,6 +112,45 @@ public class SelectedItemActivity extends AppCompatActivity {
 
            }
        });
+
+
+        Descriptionwrite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (!c3) {
+
+                    Description.setFocusable(true);
+                    Description.setCursorVisible(true);
+                    Description.setFocusableInTouchMode(true);
+                    Description.setTextColor(Color.GRAY);
+                    DoneSelected.setBackgroundTintList(ColorStateList.valueOf(Color.BLUE));
+
+                    c3 = true;
+
+
+                } else {
+                    Description.setFocusable(false);
+                    Description.setCursorVisible(false);
+                    Description.setFocusableInTouchMode(false);
+                    Description.setTextColor(color);
+                    try {
+                        Description.setText(String.format("%s", arraylist.get(0).getDESCRIPTION()));
+
+                    }
+                    catch (Exception e){
+
+                    }
+                    DoneSelected.setBackgroundTintList(color);
+
+                    c3 = false;
+                }
+
+            }
+        });
+
+
+
 
 
 

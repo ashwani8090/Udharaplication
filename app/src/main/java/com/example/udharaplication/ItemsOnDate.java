@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Vibrator;
@@ -22,6 +23,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +32,8 @@ import java.util.List;
 
 public class ItemsOnDate extends AppCompatActivity {
 
+    private static long position = 0;
+    private SharedPreferences sharedPreferences;
     private AlertDialog.Builder alert;
     private CoordinatorLayout coordinatorLayout;
     private Integer recieved_amount = 0;
@@ -46,9 +50,9 @@ public class ItemsOnDate extends AppCompatActivity {
     private EditText ItemName, ProductAmount, Description, pop_credit;
     private TextView Left_Data, Received__Data;
     private String ItemNameString, ProductAmountString, DescriptionString, date, phone;
-    private Button Done,button;
+    private Button Done, button;
     private BottomSheetBehavior bottomSheetBehavior;
-    private RelativeLayout bottomsheet;
+    private ScrollView bottomsheet;
     private Intent intent;
     private FloatingActionButton floatingActionButton;
 
@@ -73,7 +77,7 @@ public class ItemsOnDate extends AppCompatActivity {
         Description = findViewById(R.id.DescriptionEdit);
         Credit = findViewById(R.id.credit_change);
         Done = findViewById(R.id.done);
-        coordinatorLayout=findViewById(R.id.itemsondatelayout);
+        coordinatorLayout = findViewById(R.id.itemsondatelayout);
         Total_amount = findViewById(R.id.total_Amount);
 
         intent = getIntent();
@@ -141,7 +145,6 @@ public class ItemsOnDate extends AppCompatActivity {
                 pop_credit = dialog.findViewById(R.id.pop_credit_edit);
 
 
-
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -150,11 +153,18 @@ public class ItemsOnDate extends AppCompatActivity {
 
                         if (recieved_amount > getTotal) {
 
-                            recieved_amount=0;
+                            recieved_amount = 0;
                             Toast.makeText(ItemsOnDate.this, "Check Received Amount is greater than total", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (recieved_amount > Left) {
+                            Toast.makeText(ItemsOnDate.this, "check you are receiving more", Toast.LENGTH_SHORT).show();
                             return;
                         } else {
                             onStart();
+
+
                             dialog.dismiss();
 
 
@@ -174,13 +184,13 @@ public class ItemsOnDate extends AppCompatActivity {
 
     private void SaveToDataBase() {
 
-        boolean insert = databaseItems.InsertDates(date, ItemNameString, phone, Integer.parseInt(ProductAmountString), DescriptionString);
-
+        boolean insert = databaseItems.InsertDates(date, ItemNameString, phone,
+                Integer.parseInt(ProductAmountString), DescriptionString);
 
 
         if (insert) {
             onStart();
-            databaseDates.upDateTotal(date,getTotal);
+            databaseDates.upDateTotal(date, getTotal);
             Toast.makeText(this, "Added", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "Not Inserted", Toast.LENGTH_SHORT).show();
@@ -205,28 +215,33 @@ public class ItemsOnDate extends AppCompatActivity {
 
         DatesTable();
 
-        Left=getTotal-Credit_amount;
-        databaseDates.UpdateLeft(date,Left);
-        Received__Data.setText(""+Credit_amount);
-        Left_Data.setText(""+Left);
-        Total_amount.setText(""+getTotal);
+        Left = getTotal - Credit_amount;
+        databaseDates.UpdateLeft(date, Left);
+        Received__Data.setText("" + Credit_amount);
+        Left_Data.setText("" + Left);
+        Total_amount.setText("" + getTotal);
+
+        if ((Left == 0) && (getTotal != 0)) {
+            databaseDates.UpDatePaid(date, "paid");
+
+        } else {
+            databaseDates.UpDatePaid(date, "not paid");
+        }
 
 
+        sharedPreferences = getSharedPreferences("position", MODE_PRIVATE);
+        position = sharedPreferences.getLong("position2", 0);
 
-
+        linearLayoutManager.scrollToPositionWithOffset((int) position, (int) position);
 
 
     }
 
 
-
-
-
-
-    public void ItemsTable()  {
+    public void ItemsTable() {
 
         arraylist.clear();
-        getTotal=0;
+        getTotal = 0;
         Cursor cursor = databaseItems.getAllDataDate(date);
 
         if (cursor.getCount() == 0) {
@@ -248,14 +263,11 @@ public class ItemsOnDate extends AppCompatActivity {
             }
 
 
-            for (ConstructorItems constructorItems:arraylist)
-            {
-                getTotal+=constructorItems.getAMOUNT();
+            for (ConstructorItems constructorItems : arraylist) {
+                getTotal += constructorItems.getAMOUNT();
             }
 
         }
-
-
 
 
     }
@@ -263,15 +275,14 @@ public class ItemsOnDate extends AppCompatActivity {
     public void DatesTable() {
 
         dateArraylist.clear();
-        Cursor  cursor1=databaseDates.GetUnique(date);
-        if (cursor1.getCount()==0){
+        Cursor cursor1 = databaseDates.GetUnique(date);
+        if (cursor1.getCount() == 0) {
             Toast.makeText(this, "Notthing to show", Toast.LENGTH_SHORT).show();
-        }
-        else{
+        } else {
 
-            while (cursor1.moveToNext()){
+            while (cursor1.moveToNext()) {
 
-                ConstructorDate constructorDate=new ConstructorDate(cursor1.getString(0),
+                ConstructorDate constructorDate = new ConstructorDate(cursor1.getString(0),
                         cursor1.getString(1),
                         cursor1.getInt(2),
                         cursor1.getInt(3),
@@ -281,17 +292,16 @@ public class ItemsOnDate extends AppCompatActivity {
                 dateArraylist.add(constructorDate);
             }
 
-          for (ConstructorDate constructorDate:dateArraylist){
+            for (ConstructorDate constructorDate : dateArraylist) {
 
-              Credit_amount=recieved_amount+constructorDate.getRECIEVED();
+                Credit_amount = recieved_amount + constructorDate.getRECIEVED();
 
-          }
+            }
 
-          databaseDates.upDateRecieve(date,Credit_amount);
+            databaseDates.upDateRecieve(date, Credit_amount);
 
 
         }
-
 
 
     }
@@ -366,6 +376,44 @@ public class ItemsOnDate extends AppCompatActivity {
 
         ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeToDeleteCallback);
         itemTouchhelper.attachToRecyclerView(recyclerView);
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } catch (Exception r) {
+
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        position=linearLayoutManager.findFirstCompletelyVisibleItemPosition();
+
+        sharedPreferences = getSharedPreferences("position", MODE_PRIVATE);
+
+        SharedPreferences.Editor editor3 = sharedPreferences.edit();
+
+        editor3.putLong("position2", position).apply();
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        position = 0;
+        sharedPreferences = getSharedPreferences("position", MODE_PRIVATE);
+
+        SharedPreferences.Editor editor3 = sharedPreferences.edit();
+
+        editor3.putLong("position2", position).apply();
+
+
     }
 
 

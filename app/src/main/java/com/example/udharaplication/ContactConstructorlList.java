@@ -2,7 +2,7 @@ package com.example.udharaplication;
 
 public class ContactConstructorlList {
 
-    private String Phone,Name;
+    public String Phone,Name;
 
     public ContactConstructorlList() {
     }

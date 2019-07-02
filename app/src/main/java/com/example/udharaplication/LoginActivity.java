@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuthAccount, firebaseAuthEmailVerify;
     private BottomSheetBehavior bottomSheetBehavior;
     private TextView signup, back, forgetPassword;
-    private RelativeLayout bottomsheet;
+    private ScrollView bottomsheet;
     private EditText Email, Password, Confirm, EmailLogin, PasswordLogin;
     private String EmailString, PasswordString, ConfirmString, EmailStringLogin, PasswordStringLogin;
     private Button SignUpButton, LoginButton;
@@ -107,6 +108,7 @@ public class LoginActivity extends AppCompatActivity {
                     Email.setText("");
                     Password.setText("");
                     Confirm.setText("");
+                    progressBarSignup.setVisibility(View.INVISIBLE);
                     imageViewTick.setVisibility(View.INVISIBLE);
                 }
 
@@ -246,6 +248,7 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
 
                             AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this);
+                            alert.setTitle("Verify link");
                             alert.setMessage("Verify link sent to your Email").show();
                             progressBarLogin.setVisibility(View.INVISIBLE);
 

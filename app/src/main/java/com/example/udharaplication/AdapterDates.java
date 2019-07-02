@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,9 +18,11 @@ import java.util.List;
 
 public class AdapterDates extends RecyclerView.Adapter<AdapterDates.ViewholderDates> {
 
-    String date, phone;
+    private String date, phone;
     private Context context;
     private Intent intent;
+    private DatabaseDates databaseDates;
+
     private List<ConstructorDate> list = new ArrayList<>();
 
     public AdapterDates(Context context, List<ConstructorDate> list) {
@@ -44,6 +48,7 @@ public class AdapterDates extends RecyclerView.Adapter<AdapterDates.ViewholderDa
         ConstructorDate cnstructoritems = list.get(i);
         viewholderDates.textView.setText(cnstructoritems.getDATE().toString().trim());
 
+
         viewholderDates.card.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,13 +65,32 @@ public class AdapterDates extends RecyclerView.Adapter<AdapterDates.ViewholderDa
                 intent.putExtra("phone", phone);
                 intent.putExtra("date", date);
 
-                context.startActivity(intent);
-
-
-
+              context.startActivity(intent);
 
             }
         });
+
+
+
+    try {
+
+      if (cnstructoritems.getPAID().equals("paid")){
+          viewholderDates.check.setVisibility(View.VISIBLE);
+      }
+      else {
+          viewholderDates.check.setVisibility(View.INVISIBLE);
+      }
+
+
+    }
+    catch (Exception e){
+        viewholderDates.check.setVisibility(View.INVISIBLE);
+    }
+
+
+
+
+
 
 
     }
@@ -100,13 +124,16 @@ public class AdapterDates extends RecyclerView.Adapter<AdapterDates.ViewholderDa
 
     public class ViewholderDates extends RecyclerView.ViewHolder {
 
-        TextView textView;
+        TextView textView,check;
         RelativeLayout card;
+
 
         public ViewholderDates(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.DatesItem);
             card = itemView.findViewById(R.id.card2);
+            check=itemView.findViewById(R.id.check);
+
         }
     }
 

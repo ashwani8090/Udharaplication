@@ -35,11 +35,18 @@
 
 
             <TextView
-                android:id="@+id/online"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:drawableStart="@drawable/logouticon" />
+                android:text="Payable Amount"
+                android:layout_toLeftOf="@id/TotalAmountItem"
+                android:layout_alignBaseline="@id/TotalAmountItem"
+                android:textColor="#000"
+                android:textSize="15sp"
+                android:fontFamily="cursive"/>
+
+
+
+
 
 
         </RelativeLayout>
@@ -64,6 +71,8 @@
             android:id="@+id/recyclerDated"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:padding="5dp"
+            android:layout_marginBottom="20pt"
             android:layout_marginTop="51dp">
 
 
@@ -73,7 +82,7 @@
     </FrameLayout>
 
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/searching"
         android:layout_width="match_parent"
         android:layout_height="50dp"

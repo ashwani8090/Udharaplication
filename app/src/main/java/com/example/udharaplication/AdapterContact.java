@@ -1,15 +1,20 @@
 package com.example.udharaplication;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +24,11 @@ import java.util.List;
 
 public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ViewHolderContact> {
 
+    private String phonNumber;
+    private DatabaseDates databaseDates;
+    private DatabaseItems databaseItems;
+    private DataBaseHelperClass dataBaseHelperClass;
+    private Dialog dialog;
     private AlertDialog.Builder alert;
     private Intent intent;
     private ContactConstructorlList constructorlList;
@@ -41,7 +51,10 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ViewHold
     @Override
     public void onBindViewHolder(@NonNull final ViewHolderContact viewHolderContact, final int i) {
 
-
+        dialog=new Dialog(context);
+        dataBaseHelperClass=new DataBaseHelperClass(context);
+        databaseDates=new DatabaseDates(context);
+        databaseItems=new DatabaseItems(context);
         constructorlList = list.get(i);
 
         viewHolderContact.NameText.setText(constructorlList.getName());
@@ -59,28 +72,57 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ViewHold
             }
         });
 
+
         viewHolderContact.card.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
 
-                alert = new AlertDialog.Builder(context);
-                alert.setTitle("Update phone number");
+                dialog.setContentView(R.layout.popup_phone_layout);
+                dialog.show();
 
-                alert.setPositiveButton("okk", new DialogInterface.OnClickListener() {
+                Button done=dialog.findViewById(R.id.popupphone_done);
+
+
+                done.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(View v) {
+                        EditText editText=dialog.findViewById(R.id.pop_phone_edit);
 
-                   //  DataBaseHelperClass dataBaseHelperClass=new DataBaseHelperClass(context);
+                        phonNumber=editText.getText().toString().trim();
+                        if (phonNumber.length()!=10){
 
-                     }
-                }).setNegativeButton("nope", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(context, "Phone number is badly formatted", Toast.LENGTH_SHORT).show();
 
-                        alert.setCancelable(true);
+                        }
+                        else {
+
+                            dataBaseHelperClass.UpDatePhone(viewHolderContact.PhoneText.getText().toString().trim(),phonNumber);
+                            databaseDates.UpDatePhone(viewHolderContact.PhoneText.getText().toString().trim(),phonNumber);
+                            databaseItems.UpDatePhone(viewHolderContact.PhoneText.getText().toString().trim(),phonNumber);
+
+                            dialog.dismiss();
+                             notifyDataSetChanged();
+                            context.startActivity(new Intent(context,contactlist.class));
+
+                        }
                     }
-                }).show();
-                return false;
+                });
+
+                return true;
+            }
+        });
+
+
+
+
+        Context wrapper=new ContextThemeWrapper(context,R.style.PopupMenu);
+
+        final PopupMenu popupMenu=new PopupMenu(wrapper,viewHolderContact.hint);
+        popupMenu.inflate(R.menu.action_menu_hint);
+        viewHolderContact.hint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupMenu.show();
             }
         });
 
@@ -114,7 +156,7 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ViewHold
 
     public class ViewHolderContact extends RecyclerView.ViewHolder {
 
-        TextView PhoneText, NameText;
+        TextView PhoneText, NameText,hint;
         RelativeLayout card;
 
         public ViewHolderContact(@NonNull View itemView) {
@@ -122,6 +164,7 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ViewHold
             PhoneText = itemView.findViewById(R.id.phoneAdapter);
             NameText = itemView.findViewById(R.id.nameAdapter);
             card = itemView.findViewById(R.id.card1);
+            hint=itemView.findViewById(R.id.hint);
 
 
         }

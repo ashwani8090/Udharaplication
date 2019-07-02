@@ -3,6 +3,7 @@ package com.example.udharaplication;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -16,10 +17,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,8 +36,15 @@ import java.util.List;
 
 public class ItemsTaken extends AppCompatActivity {
 
-    private Integer Left=0;
-    private List<ConstructorDate> dateArraylist=new ArrayList<>();
+    private static long position = 0;
+    private SharedPreferences sharedPreferences;
+    private List<ConstructorDate> listlist = new ArrayList<>();
+    private List<ConstructorItems> itemsList = new ArrayList<>();
+    private DatabaseItems databaseItems;
+    private List<String> stringList = new ArrayList<>();
+    private ArrayAdapter<String> arrayAdapter;
+    private Integer Left = 0;
+    private List<ConstructorDate> dateArraylist = new ArrayList<>();
     private AlertDialog.Builder alert;
     private CoordinatorLayout coordinatorLayout;
     private AdapterDates adapterDates;
@@ -41,9 +53,9 @@ public class ItemsTaken extends AppCompatActivity {
     private List<ConstructorDate> arraylist = new ArrayList<>();
     private Intent intent;
     private String phone;
-    private DatabaseDates itemDatesPhone,databaseDates;
+    private DatabaseDates itemDatesPhone, databaseDates;
     private Boolean isSearch = false;
-    private EditText Searching;
+    private AutoCompleteTextView Searching;
     private TextView TotalAmountLeft;
     private BottomNavigationView bottomNavigationView;
 
@@ -54,12 +66,13 @@ public class ItemsTaken extends AppCompatActivity {
         setContentView(R.layout.activity_items_taken);
 
 
-     //   arraylist.clear();
+        //   arraylist.clear();
 
+        databaseItems = new DatabaseItems(this);
         Searching = findViewById(R.id.searching);
         coordinatorLayout = findViewById(R.id.coordinatorlayout);
         bottomNavigationView = findViewById(R.id.bottomNavigation);
-        TotalAmountLeft=findViewById(R.id.TotalAmountItem);
+        TotalAmountLeft = findViewById(R.id.TotalAmountItem);
         recyclerView = findViewById(R.id.recyclerDated);
         linearLayoutManager = new LinearLayoutManager(this);
 
@@ -69,7 +82,7 @@ public class ItemsTaken extends AppCompatActivity {
         intent = getIntent();
         phone = intent.getStringExtra("PhoneNumber");
 
-      databaseDates= itemDatesPhone = new DatabaseDates(this);
+        databaseDates = itemDatesPhone = new DatabaseDates(this);
 
 
         enableSwipe();
@@ -115,6 +128,49 @@ public class ItemsTaken extends AppCompatActivity {
             }
         });
 
+
+        Searching.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                FilterByDate(s.toString().toLowerCase().trim());
+
+
+            }
+        });
+
+
+    }
+
+    private void FilterByDate(String trim) {
+
+
+        listlist.clear();
+
+        for (ConstructorDate constructorItems : arraylist) {
+
+            if (constructorItems.getDATE().contains(trim)) {
+
+                listlist.add(constructorItems);
+            }
+
+
+        }
+
+        adapterDates = new AdapterDates(this, listlist);
+        recyclerView.setAdapter(adapterDates);
+
     }
 
 
@@ -123,11 +179,17 @@ public class ItemsTaken extends AppCompatActivity {
         super.onStart();
 
         arraylist.clear();
+        try {
 
+            stringList.clear();
+
+        } catch (Exception e) {
+
+        }
         Cursor cursor = itemDatesPhone.GetALlDate(phone);
         if (cursor.getCount() == 0) {
             Toast.makeText(this, "nothing to show", Toast.LENGTH_SHORT).show();
-            return;
+
         } else {
 
             while (cursor.moveToNext()) {
@@ -146,19 +208,24 @@ public class ItemsTaken extends AppCompatActivity {
             }
 
 
-
-
-            adapterDates = new AdapterDates(this, arraylist);
-            recyclerView.setLayoutManager(linearLayoutManager);
-            recyclerView.setAdapter(adapterDates);
-
-
-            DatesTable();
-            TotalAmountLeft.setText("Rs. "+Left);
-
-
-
         }
+
+        adapterDates = new AdapterDates(this, arraylist);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(adapterDates);
+
+
+        DatesTable();
+        TotalAmountLeft.setText(String.format("Rs. %d", Left));
+
+
+        arrayAdapter = new ArrayAdapter<String>(ItemsTaken.this, android.R.layout.simple_list_item_1, stringList);
+        Searching.setAdapter(arrayAdapter);
+
+        sharedPreferences = getSharedPreferences("position", MODE_PRIVATE);
+        position = sharedPreferences.getLong("position3", 0);
+
+        linearLayoutManager.scrollToPositionWithOffset((int) position, (int) position);
 
 
     }
@@ -190,6 +257,7 @@ public class ItemsTaken extends AppCompatActivity {
                                 item.getPAID());
                         adapterDates.restoreItem(item, position);
                         recyclerView.scrollToPosition(position);
+                        onStart();
 
                     }
                 });
@@ -209,6 +277,7 @@ public class ItemsTaken extends AppCompatActivity {
                             Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                             vibrator.vibrate(200);
                             snackbar.show();
+                            onStart();
                         } else {
                             Toast.makeText(mContext, "Not Deleted", Toast.LENGTH_SHORT).show();
                         }
@@ -234,21 +303,19 @@ public class ItemsTaken extends AppCompatActivity {
     }
 
 
-
-
     public void DatesTable() {
-
-        Left=0;
+        Cursor cursor1 = databaseDates.GetALlDate(phone);
+        Left = 0;
         dateArraylist.clear();
-        Cursor  cursor1=databaseDates.GetALlDate(phone);
-        if (cursor1.getCount()==0){
-            Toast.makeText(this, "Notthing to show", Toast.LENGTH_SHORT).show();
-        }
-        else{
+        if (cursor1.getCount() == 0) {
+            Left = 0;
+            Toast.makeText(this, "Nothing to show", Toast.LENGTH_SHORT).show();
+            return;
+        } else {
 
-            while (cursor1.moveToNext()){
+            while (cursor1.moveToNext()) {
 
-                ConstructorDate constructorDate=new ConstructorDate(cursor1.getString(0),
+                ConstructorDate constructorDate = new ConstructorDate(cursor1.getString(0),
                         cursor1.getString(1),
                         cursor1.getInt(2),
                         cursor1.getInt(3),
@@ -259,15 +326,89 @@ public class ItemsTaken extends AppCompatActivity {
             }
 
 
-            for (ConstructorDate date:dateArraylist)
-               Left+=date.getLEFTP();
+            for (ConstructorDate date : dateArraylist) {
+                Left += date.getLEFTP();
+                stringList.add(date.getDATE());
+
+            }
 
         }
-
 
 
     }
 
 
+    public void ItemsTable() {
 
+        itemsList.clear();
+
+        Cursor cursor = databaseItems.GetAllwithPhone(phone);
+
+        if (cursor.getCount() == 0) {
+            Toast.makeText(this, "nothing to show", Toast.LENGTH_SHORT).show();
+        } else {
+
+            while (cursor.moveToNext()) {
+
+                ConstructorItems constructorItems = new ConstructorItems(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getInt(4),
+                        cursor.getString(5)
+                );
+                itemsList.add(constructorItems);
+            }
+
+
+            for (ConstructorItems constructorItems : itemsList) {
+
+
+            }
+
+        }
+
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        try {
+            stringList.clear();
+        } catch (Exception b) {
+
+        }
+
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        position = linearLayoutManager.findFirstCompletelyVisibleItemPosition();
+
+        sharedPreferences = getSharedPreferences("position", MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putLong("position3", position).apply();
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        position = 0;
+        sharedPreferences = getSharedPreferences("position", MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putLong("position3", position).apply();
+
+
+    }
 }
