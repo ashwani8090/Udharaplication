@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/addcontactBottomsheet"
+    android:layout_width="match_parent"
+    android:layout_height="250dp"
+    android:background="#CAC5C5"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="0dp"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+
+    <EditText
+        android:id="@+id/nameofcontact"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/textview"
+        android:hint="@string/name_of_contact"
+        android:paddingStart="10dp"
+        android:textSize="12sp" />
+
+    <EditText
+        android:id="@+id/phoneNumber"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/textview"
+        android:hint="@string/phone_number"
+        android:inputType="phone"
+        android:paddingStart="10dp"
+
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/add"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/textview"
+        android:backgroundTint="#425FF5"
+        android:text="@string/add_contact"
+        android:textColor="#fff"
+        tools:ignore="TextViewEdits" />
+
+
+</LinearLayout>

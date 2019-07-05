@@ -1,11 +1,13 @@
 package com.example.udharaplication;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -157,7 +159,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (EmailLogin.getText().toString().trim().isEmpty() || PasswordLogin.getText().toString().trim().isEmpty()) {
 
-                    AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this);
+                    AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this,R.style.Alert);
+                    alert.setTitle("Info");
+                    alert.setIcon(R.drawable.ic_info_outline_black_24dp);
                     alert.setMessage("please fill entries").show();
 
                 } else {
@@ -175,16 +179,19 @@ public class LoginActivity extends AppCompatActivity {
                                         if (task.isSuccessful()) {
 
 
-                                            AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this);
-                                            alert.setMessage("Password Succesfully sent to your email").show();
-
+                                            AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this,R.style.Alert);
+                                            alert.setTitle("Info");
+                                            alert.setIcon(R.drawable.ic_info_outline_black_24dp);
+                                            alert.setMessage("Follow link sent to your email to change password").show();
                                             progressBarLogin.setVisibility(View.INVISIBLE);
 
                                         } else {
 
-                                            AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this);
-                                            alert.setMessage("" + Objects.requireNonNull(task.getException()).getMessage()).setTitle("Error").show();
+                                            AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this,R.style.Alert);
                                             progressBarLogin.setVisibility(View.INVISIBLE);
+                                            alert.setIcon(R.drawable.ic_info_outline_black_24dp);
+                                            alert.setTitle("Info");
+                                            alert.setMessage("" + Objects.requireNonNull(task.getException()).getMessage()).setTitle("Error").show();
 
 
                                         }
@@ -196,8 +203,11 @@ public class LoginActivity extends AppCompatActivity {
 
                             } else {
 
-                                AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this);
+                                AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this,R.style.Alert);
+                                alert.setIcon(R.drawable.ic_info_outline_black_24dp);
+                                alert.setTitle("Info");
                                 alert.setMessage("Password is Already Correct").show();
+
                                 progressBarLogin.setVisibility(View.INVISIBLE);
                             }
 
@@ -247,8 +257,10 @@ public class LoginActivity extends AppCompatActivity {
                             finish();
                         } else {
 
-                            AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this);
+                            AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this,R.style.Alert);
                             alert.setTitle("Verify link");
+                            alert.setTitle("Info");
+                            alert.setIcon(R.drawable.ic_info_outline_black_24dp);
                             alert.setMessage("Verify link sent to your Email").show();
                             progressBarLogin.setVisibility(View.INVISIBLE);
 
@@ -260,7 +272,9 @@ public class LoginActivity extends AppCompatActivity {
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this);
+                    AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this,R.style.Alert);
+                    alert.setTitle("Info");
+                    alert.setIcon(R.drawable.ic_info_outline_black_24dp);
                     alert.setMessage("" + e.getMessage()).show();
                     progressBarLogin.setVisibility(View.INVISIBLE);
 
@@ -324,9 +338,11 @@ public class LoginActivity extends AppCompatActivity {
                                 imageViewTick.setImageResource(R.drawable.green_tick);
                                 progressBarSignup.setVisibility(View.INVISIBLE);
                                 firebaseAuthAccount.signOut();
-                                AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this);
-                                alert.setMessage("Verification Link sent to your email").show();
+                                AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this,R.style.Alert);
 
+                                alert.setTitle("Info");
+                                alert.setIcon(R.drawable.ic_info_outline_black_24dp);
+                                alert.setMessage("Verification Link sent to your email").show();
                             } else {
                                 Toast.makeText(LoginActivity.this, "Recreate Account", Toast.LENGTH_SHORT).show();
                                 progressBarSignup.setVisibility(View.INVISIBLE);
@@ -337,7 +353,9 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(@NonNull Exception e) {
 
-                            AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this);
+                            AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this,R.style.Alert);
+                            alert.setIcon(R.drawable.ic_info_outline_black_24dp);
+                            alert.setTitle("Info");
                             alert.setMessage("" + e.getMessage()).show();
                         }
                     });

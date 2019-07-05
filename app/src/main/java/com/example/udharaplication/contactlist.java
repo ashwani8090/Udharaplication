@@ -60,8 +60,9 @@ public class contactlist extends AppCompatActivity {
 
 
     private static long position = 0;
+    private TextView info;
     private SharedPreferences sharedPreferences;
-    private PopupMenu popupMenu;
+    private PopupMenu popupMenu, popupMenu2;
     private List<String> stringList = new ArrayList<>();
     private List<ContactConstructorlList> listList;
     private ArrayAdapter<String> arrayAdapter;
@@ -82,7 +83,7 @@ public class contactlist extends AppCompatActivity {
     private BottomSheetBehavior bottomSheetBehavior;
     private FloatingActionButton floatingActionButtonAddcontact;
     private EditText Name, PhoneNumber;
-    private String PhoneString, NameString, DateString;
+    private String PhoneString = "", NameString, DateString;
     private AlertDialog.Builder alert;
 
 
@@ -94,6 +95,8 @@ public class contactlist extends AppCompatActivity {
 
         arrayList.clear();
 
+
+        info = findViewById(R.id.info);
         Visible_layout = findViewById(R.id.searching_relative);
         Search_bar = findViewById(R.id.search_bar);
         Search_icon = findViewById(R.id.seach_icon);
@@ -129,10 +132,11 @@ public class contactlist extends AppCompatActivity {
         //popupcode
 
 
-        Context wrapper=new ContextThemeWrapper(this,R.style.PopupMenu);
+        Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenu);
         popupMenu = new PopupMenu(wrapper, logout);
+        popupMenu2 = new PopupMenu(wrapper, info);
+        popupMenu2.inflate(R.menu.action_menu_hint);
         popupMenu.inflate(R.menu.action_online_logout);
-
 
 
         addContactButton.setOnClickListener(new View.OnClickListener() {
@@ -147,16 +151,22 @@ public class contactlist extends AppCompatActivity {
                     Toast.makeText(contactlist.this, "Name must be there", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (PhoneString.length() < 10) {
-                    Toast.makeText(contactlist.this, "Phone Number is badly formatted", Toast.LENGTH_SHORT).show();
-                    return;
-                } else {
+               else if ((!PhoneString.isEmpty())&& (PhoneString.length() < 10)){
+
+
+                        Toast.makeText(contactlist.this, "Phone Number is badly formatted", Toast.LENGTH_SHORT).show();
+                        return;
+
+                }
+                else {
                     NameString = Name.getText().toString().trim().substring(0, 1).toUpperCase() + Name.getText().toString().trim().substring(1);
 
                     boolean isInserted = dataBaseHelperClass.insertData(PhoneString, NameString);
                     if (isInserted) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                             onStart();
+                            Vibrator vibrator= (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                            vibrator.vibrate(200);
                         }
                         Toast.makeText(contactlist.this, "Added", Toast.LENGTH_SHORT).show();
                     } else {
@@ -209,6 +219,14 @@ public class contactlist extends AppCompatActivity {
         });
 
 
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupMenu2.show();
+            }
+        });
+
+
         /******************************************floating Button code is here*/
 
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -255,6 +273,7 @@ public class contactlist extends AppCompatActivity {
                 animation = AnimationUtils.loadAnimation(contactlist.this, R.anim.scaling_anime);
                 Visible_layout.setVisibility(View.VISIBLE);
                 logout.setVisibility(View.INVISIBLE);
+                info.setVisibility(View.INVISIBLE);
                 Search_bar.setCursorVisible(true);
                 Search_icon.setVisibility(View.INVISIBLE);
                 Visible_layout.setAnimation(animation);
@@ -276,6 +295,7 @@ public class contactlist extends AppCompatActivity {
                         Visible_layout.setVisibility(View.INVISIBLE);
                         logout.setVisibility(View.VISIBLE);
                         Search_bar.setText("");
+                        info.setVisibility(View.VISIBLE);
                         Search_bar.setCursorVisible(false);
                         Search_icon.setVisibility(View.VISIBLE);
                         Visible_layout.setAnimation(animation2);
@@ -364,7 +384,7 @@ public class contactlist extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        Integer integer = dataBaseHelperClass.deleteData(item.getPhone());
+                        Integer integer = dataBaseHelperClass.deleteData(item.getPk());
                         if (integer > 0) {
                             Toast.makeText(mContext, "Deleted", Toast.LENGTH_SHORT).show();
                             Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -426,8 +446,9 @@ public class contactlist extends AppCompatActivity {
             while (cursor.moveToNext()) {
 
                 ContactConstructorlList constructorlList = new
-                        ContactConstructorlList(cursor.getString(0),
-                        cursor.getString(1));
+                        ContactConstructorlList(cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2));
                 arrayList.add(constructorlList);
             }
             for (ContactConstructorlList constructorlList : arrayList) {

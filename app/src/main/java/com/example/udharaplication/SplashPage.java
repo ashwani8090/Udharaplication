@@ -13,9 +13,7 @@ import android.widget.ProgressBar;
 public class SplashPage extends AppCompatActivity {
 
     Handler handler;
-    ProgressBar progressBar;
 
-    int p=0;
 
     @SuppressLint("HandlerLeak")
     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -44,10 +42,9 @@ public class SplashPage extends AppCompatActivity {
 
         @Override
         public void run() {
-            progressBar = findViewById(R.id.progressBar);
 
             for ( ; i < 100; ) {
-                progressBar.setProgress(i);
+
                 i=i+3;
                 try {
                     Thread.sleep(50);

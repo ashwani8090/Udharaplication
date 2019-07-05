@@ -12,6 +12,7 @@ public class DataBaseHelperClass extends SQLiteOpenHelper {
     private static final String TABLE_NAME="CONTACTS";
     private static final String PHONE_NO="PHONE";
     private static final String NAME_OF_CONTACT="NAME";
+    private static final String PK="PK";
 
 
 
@@ -23,7 +24,7 @@ public class DataBaseHelperClass extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        db.execSQL("create table " + TABLE_NAME +" (PHONE PRIMARY KEY,NAME)");
+        db.execSQL("create table " + TABLE_NAME +" (PK INTEGER PRIMARY KEY AUTOINCREMENT,PHONE,NAME)");
 
     }
 
@@ -57,20 +58,20 @@ public class DataBaseHelperClass extends SQLiteOpenHelper {
     }
 
 
-    public Integer deleteData(String row){
+    public Integer deleteData(Integer row){
         SQLiteDatabase db=this.getWritableDatabase();
-          return db.delete(TABLE_NAME, "PHONE=?",new String[]{row});
+          return db.delete(TABLE_NAME, "PK=?",new String[]{String.valueOf(row)});
 
 
     }
 
 
-    public  boolean UpDatePhone(String phone,String newphone){
+    public  boolean UpDatePhone(Integer pk,String newphone){
 
         SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
         ContentValues contentValues=new ContentValues();
         contentValues.put(PHONE_NO,newphone);
-        sqLiteDatabase.update(TABLE_NAME,contentValues, "PHONE=?",new String[]{phone});
+        sqLiteDatabase.update(TABLE_NAME,contentValues, "PK=?",new String[]{String.valueOf(pk)});
         return  true;
 
     }

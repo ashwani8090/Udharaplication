@@ -16,6 +16,7 @@ public class DatabaseItems extends SQLiteOpenHelper {
     public static final String AMOUNT = "AMOUNT";
     public static final String PHONE = "PHONE";
     public static final String DESCRIPTION = "DESCRIPTION";
+    public static final String PK = "PK";
 
 
     private Context context;
@@ -30,13 +31,13 @@ public class DatabaseItems extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
 
-        db.execSQL("create table " + TABLE_NAME + "( ID INTEGER PRIMARY KEY AUTOINCREMENT,DATES,ITEM_NAME,PHONE,AMOUNT INTEGER,DESCRIPTION, FOREIGN KEY(PHONE) REFERENCES Contacts(Phone) )");
+        db.execSQL("create table " + TABLE_NAME + "( ID INTEGER PRIMARY KEY AUTOINCREMENT,DATES,ITEM_NAME,PHONE,AMOUNT INTEGER,DESCRIPTION,PK INTEGER, FOREIGN KEY(PK) REFERENCES Contacts(PK) )");
 
     }
 
 
     public boolean InsertDates(String dates, String itemnames,
-                                 String phone,Integer amount,  String description) {
+                                 String phone,Integer amount,  String description,Integer Pk) {
 
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -46,6 +47,7 @@ public class DatabaseItems extends SQLiteOpenHelper {
         contentValues.put(DESCRIPTION, description);
         contentValues.put(PHONE, phone);
         contentValues.put(AMOUNT, amount);
+        contentValues.put(PK,Pk);
 
 
         long result = db.insert(TABLE_NAME, null, contentValues);
@@ -57,7 +59,7 @@ public class DatabaseItems extends SQLiteOpenHelper {
 
 
     public boolean InsertAfterDeleteItem(Integer Id,String dates, String itemnames,
-                               String phone,Integer amount,  String description) {
+                               String phone,Integer amount,  String description,Integer pk) {
 
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -68,6 +70,7 @@ public class DatabaseItems extends SQLiteOpenHelper {
         contentValues.put(DESCRIPTION, description);
         contentValues.put(PHONE, phone);
         contentValues.put(AMOUNT, amount);
+        contentValues.put(PK,pk);
 
 
         long result = db.insert(TABLE_NAME, null, contentValues);
@@ -128,21 +131,21 @@ public class DatabaseItems extends SQLiteOpenHelper {
 
 
 
-    public  boolean UpDatePhone(String phone,String newphone){
+    public  boolean UpDatePhone(Integer pk,String newphone){
 
         SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
         ContentValues contentValues=new ContentValues();
         contentValues.put(PHONE,newphone);
-        sqLiteDatabase.update(TABLE_NAME,contentValues, "PHONE=?",new String[]{phone});
+        sqLiteDatabase.update(TABLE_NAME,contentValues, "PK=?",new String[]{String.valueOf(pk)});
         return  true;
 
     }
 
 
 
-    public Cursor GetAllwithPhone(String phone) {
+    public Cursor GetAllwithPhone(Integer pk) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_NAME + " where PHONE=?", new String[]{String.valueOf(phone)});
+        Cursor cursor = db.rawQuery("select * from " + TABLE_NAME + " where PK=?", new String[]{String.valueOf(pk)});
         return cursor;
     }
 
@@ -158,6 +161,16 @@ public class DatabaseItems extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("select PHONE from " + TABLE_NAME + " where DESCRIPTION=?",
                 new String[]{des});
         return cursor;
+    }
+
+
+
+    public Integer DeleteAllofPhone(Integer PK){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(TABLE_NAME, "PK=?", new String[]{String.valueOf(PK)});
+
+
     }
 
 

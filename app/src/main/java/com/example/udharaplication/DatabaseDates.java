@@ -17,6 +17,7 @@ public class DatabaseDates extends SQLiteOpenHelper {
     private static final String LEFTP = "LEFTP";
     private static final String PAID = "PAID";
     private static final String TOTAL = "TOTAL";
+    private static final String PK="PK";
 
 
     public DatabaseDates(Context context) {
@@ -26,7 +27,7 @@ public class DatabaseDates extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        db.execSQL("create table " + TABLE_NAME + "( DATE primary key,PHONE,RECIEVED INTEGER, LEFTP INTEGER,TOTAL INTEGER,PAID ,foreign key(PHONE) references Contacts(PHONE))");
+        db.execSQL("create table " + TABLE_NAME + "( DATE primary key,PHONE,RECIEVED INTEGER, LEFTP INTEGER,TOTAL INTEGER,PAID ,PK INTEGER,foreign key(PK) references Contacts(PK))");
     }
 
     @Override
@@ -37,13 +38,14 @@ public class DatabaseDates extends SQLiteOpenHelper {
     }
 
 
-    public boolean insertDate(String Date, String Phone) {
+    public boolean insertDate(String Date, String Phone,Integer Pk) {
 
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(DATE, Date);
         contentValues.put(PHONE, Phone);
+        contentValues.put(PK,Pk);
 
 
         long result = sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
@@ -64,9 +66,9 @@ public class DatabaseDates extends SQLiteOpenHelper {
     }
 
 
-    public Cursor GetALlDate(String phone) {
+    public Cursor GetALlDate(Integer pk) {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-        Cursor cursor = sqLiteDatabase.rawQuery(" select * from " + TABLE_NAME + " where PHONE=?", new String[]{phone});
+        Cursor cursor = sqLiteDatabase.rawQuery(" select * from " + TABLE_NAME + " where PK=?", new String[]{String.valueOf(pk)});
         return cursor;
 
     }
@@ -112,7 +114,7 @@ public class DatabaseDates extends SQLiteOpenHelper {
     }
 
 
-    public boolean InsertAfterDelete(String Date, String Phone, Integer Received, Integer Left, Integer Total, String Paid) {
+    public boolean InsertAfterDelete(String Date, String Phone, Integer Received, Integer Left, Integer Total, String Paid,Integer pk) {
 
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -124,6 +126,7 @@ public class DatabaseDates extends SQLiteOpenHelper {
         contentValues.put(LEFTP, Left);
         contentValues.put(TOTAL, Total);
         contentValues.put(PAID, Paid);
+        contentValues.put(PK,pk);
 
 
         long result = sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
@@ -136,12 +139,12 @@ public class DatabaseDates extends SQLiteOpenHelper {
     }
 
 
-    public boolean UpDatePhone(String phone, String newphone) {
+    public boolean UpDatePhone(Integer Pk, String newphone) {
 
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(PHONE, newphone);
-        sqLiteDatabase.update(TABLE_NAME, contentValues, "PHONE=?", new String[]{phone});
+        sqLiteDatabase.update(TABLE_NAME, contentValues, "PK=?", new String[]{String.valueOf(Pk)});
         return true;
 
     }
@@ -155,6 +158,17 @@ public class DatabaseDates extends SQLiteOpenHelper {
         sqLiteDatabase.update(TABLE_NAME, contentValues, "DATE=?", new String[]{date});
         return true;
     }
+
+    public Integer DeleteAllofPhone(Integer pk){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(TABLE_NAME, "PK=?", new String[]{String.valueOf(pk)});
+
+
+    }
+
+
+
 
 
 }

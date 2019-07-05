@@ -34,6 +34,7 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ViewHold
     private ContactConstructorlList constructorlList;
     private List<ContactConstructorlList> list = new ArrayList<>();
     private Context context;
+    private Integer Pk;
 
     public AdapterContact(List<ContactConstructorlList> list, Context context) {
         this.list = list;
@@ -65,9 +66,11 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ViewHold
 
                 intent = new Intent(context, ItemsTaken.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 int p = viewHolderContact.getAdapterPosition();
-                String phone = viewHolderContact.PhoneText.getText().toString();
+                Pk=list.get(viewHolderContact.getAdapterPosition()).getPk();
+                String phone = viewHolderContact.PhoneText.getText().toString().trim();
 
                 intent.putExtra("PhoneNumber", phone);
+                intent.putExtra("pk",Pk);
                 context.startActivity(intent);
             }
         });
@@ -96,13 +99,13 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ViewHold
                         }
                         else {
 
-                            dataBaseHelperClass.UpDatePhone(viewHolderContact.PhoneText.getText().toString().trim(),phonNumber);
-                            databaseDates.UpDatePhone(viewHolderContact.PhoneText.getText().toString().trim(),phonNumber);
-                            databaseItems.UpDatePhone(viewHolderContact.PhoneText.getText().toString().trim(),phonNumber);
+                            dataBaseHelperClass.UpDatePhone(list.get(viewHolderContact.getAdapterPosition()).getPk(),phonNumber);
+                           databaseDates.UpDatePhone(list.get(viewHolderContact.getAdapterPosition()).getPk(),phonNumber);
+                          databaseItems.UpDatePhone(list.get(viewHolderContact.getAdapterPosition()).getPk(),phonNumber);
 
                             dialog.dismiss();
                              notifyDataSetChanged();
-                            context.startActivity(new Intent(context,contactlist.class));
+                            context.startActivity(new Intent(context,contactlist.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
 
                         }
                     }
@@ -115,16 +118,7 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ViewHold
 
 
 
-        Context wrapper=new ContextThemeWrapper(context,R.style.PopupMenu);
 
-        final PopupMenu popupMenu=new PopupMenu(wrapper,viewHolderContact.hint);
-        popupMenu.inflate(R.menu.action_menu_hint);
-        viewHolderContact.hint.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popupMenu.show();
-            }
-        });
 
 
     }
@@ -156,7 +150,7 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ViewHold
 
     public class ViewHolderContact extends RecyclerView.ViewHolder {
 
-        TextView PhoneText, NameText,hint;
+        TextView PhoneText, NameText;
         RelativeLayout card;
 
         public ViewHolderContact(@NonNull View itemView) {
@@ -164,7 +158,7 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ViewHold
             PhoneText = itemView.findViewById(R.id.phoneAdapter);
             NameText = itemView.findViewById(R.id.nameAdapter);
             card = itemView.findViewById(R.id.card1);
-            hint=itemView.findViewById(R.id.hint);
+
 
 
         }

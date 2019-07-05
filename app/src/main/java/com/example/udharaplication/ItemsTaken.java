@@ -36,6 +36,8 @@ import java.util.List;
 
 public class ItemsTaken extends AppCompatActivity {
 
+    private DatabaseItems databaseItems2;
+    private AlertDialog.Builder getAlert;
     private static long position = 0;
     private SharedPreferences sharedPreferences;
     private List<ConstructorDate> listlist = new ArrayList<>();
@@ -43,7 +45,7 @@ public class ItemsTaken extends AppCompatActivity {
     private DatabaseItems databaseItems;
     private List<String> stringList = new ArrayList<>();
     private ArrayAdapter<String> arrayAdapter;
-    private Integer Left = 0;
+    private long Left = 0;
     private List<ConstructorDate> dateArraylist = new ArrayList<>();
     private AlertDialog.Builder alert;
     private CoordinatorLayout coordinatorLayout;
@@ -55,8 +57,9 @@ public class ItemsTaken extends AppCompatActivity {
     private String phone;
     private DatabaseDates itemDatesPhone, databaseDates;
     private Boolean isSearch = false;
+    private Integer PK;
     private AutoCompleteTextView Searching;
-    private TextView TotalAmountLeft;
+    private TextView TotalAmountLeft, DeleteAll;
     private BottomNavigationView bottomNavigationView;
 
 
@@ -74,6 +77,7 @@ public class ItemsTaken extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottomNavigation);
         TotalAmountLeft = findViewById(R.id.TotalAmountItem);
         recyclerView = findViewById(R.id.recyclerDated);
+        DeleteAll = findViewById(R.id.deleteall);
         linearLayoutManager = new LinearLayoutManager(this);
 
         Searching.setVisibility(View.INVISIBLE);
@@ -81,8 +85,11 @@ public class ItemsTaken extends AppCompatActivity {
 
         intent = getIntent();
         phone = intent.getStringExtra("PhoneNumber");
+        PK=intent.getIntExtra("pk",0);
 
         databaseDates = itemDatesPhone = new DatabaseDates(this);
+        databaseItems2=new DatabaseItems(this);
+
 
 
         enableSwipe();
@@ -100,7 +107,7 @@ public class ItemsTaken extends AppCompatActivity {
 
 
                         /***************correct this problem*****************************************************/
-                        boolean b = itemDatesPhone.insertDate(DateString, phone);
+                        boolean b = itemDatesPhone.insertDate(DateString, phone,PK);
                         onStart();
                         break;
 
@@ -151,6 +158,54 @@ public class ItemsTaken extends AppCompatActivity {
         });
 
 
+        //delete All code
+
+        DeleteAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+              alert=new AlertDialog.Builder(ItemsTaken.this,R.style.Alert);
+              alert.setIcon(R.drawable.ic_delete_black_24dp);
+
+              alert.setTitle("Trash");
+              alert.setMessage("Really want to delete all or swipe left to delete single date?");
+
+              alert.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                  @Override
+                  public void onClick(DialogInterface dialog, int which) {
+
+                     Integer integer= itemDatesPhone.DeleteAllofPhone(PK);
+                       databaseItems2.DeleteAllofPhone(PK);
+
+
+                     if (integer>0){
+                         Toast.makeText(ItemsTaken.this, "Deleted", Toast.LENGTH_SHORT).show();
+
+                         Vibrator vibrator= (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                         vibrator.vibrate(200);
+                         onStart();
+                     }
+                     else{
+                         Toast.makeText(ItemsTaken.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                     }
+
+
+
+                  }
+              }).setNegativeButton("nope", new DialogInterface.OnClickListener() {
+                  @Override
+                  public void onClick(DialogInterface dialog, int which) {
+
+                      alert.setCancelable(true);
+                  }
+              });
+
+              alert.show();
+
+            }
+        });
+
+
     }
 
     private void FilterByDate(String trim) {
@@ -186,7 +241,7 @@ public class ItemsTaken extends AppCompatActivity {
         } catch (Exception e) {
 
         }
-        Cursor cursor = itemDatesPhone.GetALlDate(phone);
+        Cursor cursor = itemDatesPhone.GetALlDate(PK);
         if (cursor.getCount() == 0) {
             Toast.makeText(this, "nothing to show", Toast.LENGTH_SHORT).show();
 
@@ -200,7 +255,8 @@ public class ItemsTaken extends AppCompatActivity {
                         cursor.getInt(2),
                         cursor.getInt(3),
                         cursor.getInt(4),
-                        cursor.getString(5));
+                        cursor.getString(5),
+                        cursor.getInt(6));
 
                 arraylist.add(constructorlList);
 
@@ -254,7 +310,8 @@ public class ItemsTaken extends AppCompatActivity {
                                 item.getRECIEVED(),
                                 item.getLEFTP(),
                                 item.getTOTAL(),
-                                item.getPAID());
+                                item.getPAID(),
+                                item.getPK());
                         adapterDates.restoreItem(item, position);
                         recyclerView.scrollToPosition(position);
                         onStart();
@@ -304,7 +361,7 @@ public class ItemsTaken extends AppCompatActivity {
 
 
     public void DatesTable() {
-        Cursor cursor1 = databaseDates.GetALlDate(phone);
+        Cursor cursor1 = databaseDates.GetALlDate(PK);
         Left = 0;
         dateArraylist.clear();
         if (cursor1.getCount() == 0) {
@@ -320,7 +377,8 @@ public class ItemsTaken extends AppCompatActivity {
                         cursor1.getInt(2),
                         cursor1.getInt(3),
                         cursor1.getInt(4),
-                        cursor1.getString(5));
+                        cursor1.getString(5),
+                        cursor1.getInt(6));
 
                 dateArraylist.add(constructorDate);
             }
@@ -329,6 +387,8 @@ public class ItemsTaken extends AppCompatActivity {
             for (ConstructorDate date : dateArraylist) {
                 Left += date.getLEFTP();
                 stringList.add(date.getDATE());
+
+
 
             }
 
@@ -342,7 +402,7 @@ public class ItemsTaken extends AppCompatActivity {
 
         itemsList.clear();
 
-        Cursor cursor = databaseItems.GetAllwithPhone(phone);
+        Cursor cursor = databaseItems.GetAllwithPhone(PK);
 
         if (cursor.getCount() == 0) {
             Toast.makeText(this, "nothing to show", Toast.LENGTH_SHORT).show();
@@ -356,7 +416,8 @@ public class ItemsTaken extends AppCompatActivity {
                         cursor.getString(2),
                         cursor.getString(3),
                         cursor.getInt(4),
-                        cursor.getString(5)
+                        cursor.getString(5),
+                        cursor.getInt(6)
                 );
                 itemsList.add(constructorItems);
             }

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Udhar</string>
     <string name="add_contact">Add Contact</string>
-    <string name="phone_number">Phone Number</string>
+    <string name="phone_number">Phone Number (optional)</string>
     <string name="name_of_contact">Name of Contact</string>
 </resources>

@@ -4,19 +4,20 @@ public class ConstructorDate {
 
 
     private String DATE,PHONE;
-    private Integer RECIEVED,LEFTP,TOTAL;
+    private Integer RECIEVED,LEFTP,TOTAL,PK;
     private String PAID;
 
     public ConstructorDate() {
     }
 
-    public ConstructorDate(String DATE, String PHONE, Integer RECIEVED, Integer LEFTP, Integer TOTAL, String PAID) {
+    public ConstructorDate(String DATE, String PHONE, Integer RECIEVED, Integer LEFTP, Integer TOTAL, String PAID,Integer PK) {
         this.DATE = DATE;
         this.PHONE = PHONE;
         this.RECIEVED = RECIEVED;
         this.LEFTP = LEFTP;
         this.TOTAL = TOTAL;
         this.PAID = PAID;
+        this.PK=PK;
     }
 
     public String getDATE() {
@@ -65,5 +66,13 @@ public class ConstructorDate {
 
     public void setPAID(String PAID) {
         this.PAID = PAID;
+    }
+
+    public Integer getPK() {
+        return PK;
+    }
+
+    public void setPK(Integer PK) {
+        this.PK = PK;
     }
 }

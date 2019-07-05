@@ -44,4 +44,18 @@
     </style>
 
 
+    <style name="Alert" parent="Theme.AppCompat.Light.Dialog.Alert">
+
+        <item name="buttonBarButtonStyle">@drawable/textview</item>
+        <item name="android:background">@drawable/logout</item>
+        <item name="android:backgroundTint">#BECECCCC</item>
+        <item name="textColorAlertDialogListItem">#fff</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:windowBackground">@drawable/textview</item>
+        <item name="buttonBarNegativeButtonStyle">@drawable/logout</item>
+        <item name="buttonBarPositiveButtonStyle">@drawable/logout</item>
+
+
+    </style>
+
 </resources>

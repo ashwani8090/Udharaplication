@@ -32,13 +32,14 @@ import java.util.List;
 
 public class ItemsOnDate extends AppCompatActivity {
 
+    private Integer PK;
     private static long position = 0;
     private SharedPreferences sharedPreferences;
     private AlertDialog.Builder alert;
     private CoordinatorLayout coordinatorLayout;
     private Integer recieved_amount = 0;
     private List<ConstructorDate> dateArraylist = new ArrayList<>();
-    private Integer getTotal = 0, Credit_amount = 0, Left = 0;
+    private long getTotal = 0, Credit_amount = 0, Left = 0;
     private DatabaseDates databaseDates;
     private Dialog dialog;
     private TextView Credit, Total_amount;
@@ -83,6 +84,7 @@ public class ItemsOnDate extends AppCompatActivity {
         intent = getIntent();
         date = intent.getStringExtra("date");
         phone = intent.getStringExtra("phone");
+        PK=intent.getIntExtra("PK",0);
 
         enableSwipe();
 
@@ -149,8 +151,14 @@ public class ItemsOnDate extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        recieved_amount = Integer.valueOf(pop_credit.getText().toString().trim());
+                        try {
+                            recieved_amount = Integer.valueOf(pop_credit.getText().toString().trim());
 
+                        }
+                        catch (Exception e){
+
+                            Toast.makeText(ItemsOnDate.this, "Amount is not updated", Toast.LENGTH_SHORT).show();
+                        }
                         if (recieved_amount > getTotal) {
 
                             recieved_amount = 0;
@@ -163,8 +171,10 @@ public class ItemsOnDate extends AppCompatActivity {
                             return;
                         } else {
                             onStart();
+                            recieved_amount=0;
 
-
+                            Vibrator vibrator= (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                            vibrator.vibrate(200);
                             dialog.dismiss();
 
 
@@ -185,12 +195,14 @@ public class ItemsOnDate extends AppCompatActivity {
     private void SaveToDataBase() {
 
         boolean insert = databaseItems.InsertDates(date, ItemNameString, phone,
-                Integer.parseInt(ProductAmountString), DescriptionString);
+                Integer.parseInt(ProductAmountString), DescriptionString,PK);
 
 
         if (insert) {
             onStart();
-            databaseDates.upDateTotal(date, getTotal);
+            databaseDates.upDateTotal(date, (int) getTotal);
+            Vibrator vibrator= (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            vibrator.vibrate(200);
             Toast.makeText(this, "Added", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "Not Inserted", Toast.LENGTH_SHORT).show();
@@ -204,6 +216,7 @@ public class ItemsOnDate extends AppCompatActivity {
         super.onStart();
 
 
+        Left=0;
         //Recycler Adapter
 
         ItemsTable();
@@ -216,7 +229,7 @@ public class ItemsOnDate extends AppCompatActivity {
         DatesTable();
 
         Left = getTotal - Credit_amount;
-        databaseDates.UpdateLeft(date, Left);
+        databaseDates.UpdateLeft(date, (int) Left);
         Received__Data.setText("" + Credit_amount);
         Left_Data.setText("" + Left);
         Total_amount.setText("" + getTotal);
@@ -247,7 +260,8 @@ public class ItemsOnDate extends AppCompatActivity {
         if (cursor.getCount() == 0) {
             Toast.makeText(this, "nothing to show", Toast.LENGTH_SHORT).show();
             return;
-        } else {
+        }
+        else {
 
             while (cursor.moveToNext()) {
 
@@ -257,8 +271,8 @@ public class ItemsOnDate extends AppCompatActivity {
                         cursor.getString(2),
                         cursor.getString(3),
                         cursor.getInt(4),
-                        cursor.getString(5)
-                );
+                        cursor.getString(5),
+                        cursor.getInt(6));
                 arraylist.add(constructorItems);
             }
 
@@ -267,6 +281,7 @@ public class ItemsOnDate extends AppCompatActivity {
                 getTotal += constructorItems.getAMOUNT();
             }
 
+
         }
 
 
@@ -274,10 +289,11 @@ public class ItemsOnDate extends AppCompatActivity {
 
     public void DatesTable() {
 
+        Credit_amount=0;
         dateArraylist.clear();
         Cursor cursor1 = databaseDates.GetUnique(date);
         if (cursor1.getCount() == 0) {
-            Toast.makeText(this, "Notthing to show", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Nothing to show", Toast.LENGTH_SHORT).show();
         } else {
 
             while (cursor1.moveToNext()) {
@@ -287,7 +303,8 @@ public class ItemsOnDate extends AppCompatActivity {
                         cursor1.getInt(2),
                         cursor1.getInt(3),
                         cursor1.getInt(4),
-                        cursor1.getString(5));
+                        cursor1.getString(5),
+                        cursor1.getInt(6));
 
                 dateArraylist.add(constructorDate);
             }
@@ -298,7 +315,7 @@ public class ItemsOnDate extends AppCompatActivity {
 
             }
 
-            databaseDates.upDateRecieve(date, Credit_amount);
+            databaseDates.upDateRecieve(date, (int) Credit_amount);
 
 
         }
@@ -330,7 +347,9 @@ public class ItemsOnDate extends AppCompatActivity {
                                 item.getITEM_NAME(),
                                 item.getPHONE(),
                                 item.getAMOUNT(),
-                                item.getDESCRIPTION());
+                                item.getDESCRIPTION(),
+                                item.getPk());
+
                         adapterItems.restoreItem(item, position);
                         recyclerView.scrollToPosition(position);
                         onStart();
@@ -354,6 +373,7 @@ public class ItemsOnDate extends AppCompatActivity {
                             onStart();
                             vibrator.vibrate(200);
                             snackbar.show();
+
                         } else {
                             Toast.makeText(mContext, "Not Deleted", Toast.LENGTH_SHORT).show();
                         }
@@ -383,6 +403,7 @@ public class ItemsOnDate extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         try {
+            Left=0;
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } catch (Exception r) {
 
@@ -393,6 +414,8 @@ public class ItemsOnDate extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         position=linearLayoutManager.findFirstCompletelyVisibleItemPosition();
+        recieved_amount=0;
+        Left=0;
 
         sharedPreferences = getSharedPreferences("position", MODE_PRIVATE);
 
