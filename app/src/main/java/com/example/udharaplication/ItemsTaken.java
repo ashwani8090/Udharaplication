@@ -36,6 +36,7 @@ import java.util.List;
 
 public class ItemsTaken extends AppCompatActivity {
 
+    private List<ConstructorItems> contains=new ArrayList<>();
     private DatabaseItems databaseItems2;
     private AlertDialog.Builder getAlert;
     private static long position = 0;
@@ -44,7 +45,7 @@ public class ItemsTaken extends AppCompatActivity {
     private List<ConstructorItems> itemsList = new ArrayList<>();
     private DatabaseItems databaseItems;
     private List<String> stringList = new ArrayList<>();
-    private ArrayAdapter<String> arrayAdapter;
+    private ArrayAdapter<String>  arrayAdapter;
     private long Left = 0;
     private List<ConstructorDate> dateArraylist = new ArrayList<>();
     private AlertDialog.Builder alert;
@@ -215,13 +216,14 @@ public class ItemsTaken extends AppCompatActivity {
 
         for (ConstructorDate constructorItems : arraylist) {
 
-            if (constructorItems.getDATE().contains(trim)) {
+            if (constructorItems.getDATE().toLowerCase().trim().contains(trim)) {
 
                 listlist.add(constructorItems);
             }
 
 
         }
+
 
         adapterDates = new AdapterDates(this, listlist);
         recyclerView.setAdapter(adapterDates);
@@ -234,6 +236,7 @@ public class ItemsTaken extends AppCompatActivity {
         super.onStart();
 
         arraylist.clear();
+        itemsList.clear();
         try {
 
             stringList.clear();
@@ -275,14 +278,15 @@ public class ItemsTaken extends AppCompatActivity {
         TotalAmountLeft.setText(String.format("Rs. %d", Left));
 
 
-        arrayAdapter = new ArrayAdapter<String>(ItemsTaken.this, android.R.layout.simple_list_item_1, stringList);
-        Searching.setAdapter(arrayAdapter);
 
         sharedPreferences = getSharedPreferences("position", MODE_PRIVATE);
         position = sharedPreferences.getLong("position3", 0);
 
         linearLayoutManager.scrollToPositionWithOffset((int) position, (int) position);
+        arrayAdapter = new ArrayAdapter<String>(ItemsTaken.this, android.R.layout.simple_list_item_1, stringList);
+        Searching.setAdapter(arrayAdapter);
 
+        ItemsTable();
 
     }
 
