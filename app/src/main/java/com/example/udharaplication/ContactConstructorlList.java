@@ -2,16 +2,16 @@ package com.example.udharaplication;
 
 public class ContactConstructorlList {
 
-    public String Phone,Name;
-    public Integer Pk;
+    private String Phone,Name;
+    private String Pk;
 
     public ContactConstructorlList() {
     }
 
-    public ContactConstructorlList(Integer pk,String phone,  String name) {
-        Phone = phone;
-        Name = name;
-        Pk=pk;
+    public ContactConstructorlList(String PK,String Phone,  String Name) {
+        this.Phone = Phone;
+        this.Name = Name;
+        this.Pk=PK;
     }
 
     public String getPhone() {
@@ -22,11 +22,12 @@ public class ContactConstructorlList {
         Phone = phone;
     }
 
-    public Integer getPk() {
+
+    public String getPk() {
         return Pk;
     }
 
-    public void setPk(Integer pk) {
+    public void setPk(String pk) {
         Pk = pk;
     }
 

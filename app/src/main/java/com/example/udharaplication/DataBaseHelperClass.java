@@ -24,7 +24,7 @@ public class DataBaseHelperClass extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        db.execSQL("create table " + TABLE_NAME +" (PK INTEGER PRIMARY KEY AUTOINCREMENT,PHONE,NAME)");
+        db.execSQL("create table " + TABLE_NAME +" (PK PRIMARY KEY ,PHONE,NAME)");
 
     }
 
@@ -40,10 +40,11 @@ public class DataBaseHelperClass extends SQLiteOpenHelper {
 
 
 
-    public boolean insertData(String phone,String name){
+    public boolean insertData(String Pk,String phone,String name){
         SQLiteDatabase db=this.getWritableDatabase();
         ContentValues contentValues=new ContentValues();
         contentValues.put(PHONE_NO,phone);
+        contentValues.put(PK,Pk);
         contentValues.put(NAME_OF_CONTACT,name);
         long result=db.insert(TABLE_NAME,null,contentValues);
         if (result==-1) return true;
@@ -58,21 +59,38 @@ public class DataBaseHelperClass extends SQLiteOpenHelper {
     }
 
 
-    public Integer deleteData(Integer row){
+    public Integer deleteData(String row){
         SQLiteDatabase db=this.getWritableDatabase();
-          return db.delete(TABLE_NAME, "PK=?",new String[]{String.valueOf(row)});
+          return db.delete(TABLE_NAME, "PK=?",new String[]{row});
 
 
     }
 
 
-    public  boolean UpDatePhone(Integer pk,String newphone){
+    public  boolean UpDatePhone(String pk,String newphone){
 
         SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
         ContentValues contentValues=new ContentValues();
         contentValues.put(PHONE_NO,newphone);
-        sqLiteDatabase.update(TABLE_NAME,contentValues, "PK=?",new String[]{String.valueOf(pk)});
+        sqLiteDatabase.update(TABLE_NAME,contentValues, "PK=?",new String[]{pk});
         return  true;
+
+    }
+
+
+    public boolean InsertFirebase(String Pk,String phone,String name){
+        SQLiteDatabase db=this.getWritableDatabase();
+        ContentValues contentValues=new ContentValues();
+
+        contentValues.put(PHONE_NO,phone);
+        contentValues.put(PK,Pk);
+        contentValues.put(NAME_OF_CONTACT,name);
+
+
+
+        long result=db.insert(TABLE_NAME,null,contentValues);
+        if (result==-1) return true;
+        else return true;
 
     }
 

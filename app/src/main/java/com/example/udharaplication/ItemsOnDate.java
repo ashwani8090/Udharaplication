@@ -5,14 +5,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,12 +30,14 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ItemsOnDate extends AppCompatActivity {
 
-    private Integer PK;
+    private String PK;
     private static long position = 0;
     private SharedPreferences sharedPreferences;
     private AlertDialog.Builder alert;
@@ -84,11 +89,47 @@ public class ItemsOnDate extends AppCompatActivity {
         intent = getIntent();
         date = intent.getStringExtra("date");
         phone = intent.getStringExtra("phone");
-        PK=intent.getIntExtra("PK",0);
+        PK=intent.getStringExtra("PK");
 
         enableSwipe();
 
         //   arraylist.clear();
+
+
+
+
+
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View view, int i) {
+                if (i==BottomSheetBehavior.STATE_EXPANDED){
+                    floatingActionButton.setImageResource(R.drawable.ic_close_black_24dp);
+
+                }
+                if(i==BottomSheetBehavior.STATE_COLLAPSED){
+
+                    floatingActionButton.setImageResource(R.drawable.ic_add_black_24dp);
+
+                }
+
+            }
+
+            @Override
+            public void onSlide(@NonNull View view, float v) {
+
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+
 
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,6 +137,7 @@ public class ItemsOnDate extends AppCompatActivity {
                 if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
 
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    floatingActionButton.setRippleColor(Color.GRAY);
 
                 } else {
 
@@ -103,7 +145,6 @@ public class ItemsOnDate extends AppCompatActivity {
                     ItemName.setText("");
                     ProductAmount.setText("0");
                     Description.setText("");
-
 
                 }
             }
@@ -173,6 +214,15 @@ public class ItemsOnDate extends AppCompatActivity {
                             onStart();
                             recieved_amount=0;
 
+
+                            AlertDialog.Builder alert = new AlertDialog.Builder(ItemsOnDate.this,R.style.Alert);
+                            alert.setTitle("Info");
+                            alert.setIcon(R.drawable.ic_cloud_upload_black_24dp);
+                            alert.setMessage("Before closing application upload your data online by clicking cloud in home page.").show();
+
+
+
+
                             Vibrator vibrator= (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                             vibrator.vibrate(200);
                             dialog.dismiss();
@@ -193,9 +243,15 @@ public class ItemsOnDate extends AppCompatActivity {
     }
 
     private void SaveToDataBase() {
+        String DateString = DateFormat.getDateTimeInstance().format(new Date());
 
-        boolean insert = databaseItems.InsertDates(date, ItemNameString, phone,
-                Integer.parseInt(ProductAmountString), DescriptionString,PK);
+        boolean insert = databaseItems.InsertDates(DateString,
+                date,
+                ItemNameString,
+                phone,
+                Integer.parseInt(ProductAmountString),
+                DescriptionString,
+                PK);
 
 
         if (insert) {
@@ -208,6 +264,7 @@ public class ItemsOnDate extends AppCompatActivity {
             Toast.makeText(this, "Not Inserted", Toast.LENGTH_SHORT).show();
         }
 
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
     }
 
@@ -266,13 +323,13 @@ public class ItemsOnDate extends AppCompatActivity {
             while (cursor.moveToNext()) {
 
                 ConstructorItems constructorItems = new ConstructorItems(
-                        cursor.getInt(0),
+                        cursor.getString(0),
                         cursor.getString(1),
                         cursor.getString(2),
                         cursor.getString(3),
                         cursor.getInt(4),
                         cursor.getString(5),
-                        cursor.getInt(6));
+                        cursor.getString(6));
                 arraylist.add(constructorItems);
             }
 
@@ -304,7 +361,7 @@ public class ItemsOnDate extends AppCompatActivity {
                         cursor1.getInt(3),
                         cursor1.getInt(4),
                         cursor1.getString(5),
-                        cursor1.getInt(6));
+                        cursor1.getString(6));
 
                 dateArraylist.add(constructorDate);
             }

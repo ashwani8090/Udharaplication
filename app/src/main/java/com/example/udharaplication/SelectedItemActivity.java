@@ -20,12 +20,12 @@ import java.util.List;
 public class SelectedItemActivity extends AppCompatActivity {
 
     private String des="";
-    private   Integer amount=0;
+    private Integer amount=0;
     private static ColorStateList color = null;
     private TextView Assetname, Amount, Description,Amountwrite,Descriptionwrite;
     private DatabaseItems databaseItems;
     private Intent intent;
-    private Integer ID;
+    private String ID;
     private List<ConstructorItems> arraylist = new ArrayList<>();
     private ConstructorItems constructorItems;
     private Boolean c1 = false, c2 = false,c3=false,c4=false;
@@ -45,7 +45,7 @@ public class SelectedItemActivity extends AppCompatActivity {
         Descriptionwrite=findViewById(R.id.Descriptionwrite);
 
         intent = getIntent();
-        ID = intent.getIntExtra("ID", 0);
+        ID = intent.getStringExtra("ID");
         databaseItems=new DatabaseItems(this);
         color=DoneSelected.getBackgroundTintList();
 
@@ -165,13 +165,13 @@ public class SelectedItemActivity extends AppCompatActivity {
         Cursor cursor=databaseItems.getUniqueAll(ID);
         while (cursor.moveToNext()){
            constructorItems=new ConstructorItems(
-                    cursor.getInt(0),
+                    cursor.getString(0),
                     cursor.getString(1),
                     cursor.getString(2),
                     cursor.getString(3),
                     cursor.getInt(4),
                     cursor.getString(5),
-                   cursor.getInt(6)
+                   cursor.getString(6)
             );
            arraylist.add(constructorItems);
         }

@@ -62,7 +62,7 @@ public class AdapterDates extends RecyclerView.Adapter<AdapterDates.ViewholderDa
                 } catch (Exception e) {
                 }
                 date = viewholderDates.textView.getText().toString().trim();
-                Integer PK=list.get(viewholderDates.getAdapterPosition()).getPK();
+                String PK=list.get(viewholderDates.getAdapterPosition()).getPK();
                 intent.putExtra("phone", phone);
                 intent.putExtra("date", date);
                 intent.putExtra("PK",PK);

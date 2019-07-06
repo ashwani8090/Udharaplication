@@ -3,4 +3,7 @@
     <string name="add_contact">Add Contact</string>
     <string name="phone_number">Phone Number (optional)</string>
     <string name="name_of_contact">Name of Contact</string>
+    <string name="logout">Logout</string>
+    <string name="backup_data">Backup your data</string>
+    <string name="download_data">Download data</string>
 </resources>

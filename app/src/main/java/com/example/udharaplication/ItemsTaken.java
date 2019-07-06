@@ -57,7 +57,7 @@ public class ItemsTaken extends AppCompatActivity {
     private String phone;
     private DatabaseDates itemDatesPhone, databaseDates;
     private Boolean isSearch = false;
-    private Integer PK;
+    private String PK;
     private AutoCompleteTextView Searching;
     private TextView TotalAmountLeft, DeleteAll;
     private BottomNavigationView bottomNavigationView;
@@ -85,7 +85,7 @@ public class ItemsTaken extends AppCompatActivity {
 
         intent = getIntent();
         phone = intent.getStringExtra("PhoneNumber");
-        PK=intent.getIntExtra("pk",0);
+        PK=intent.getStringExtra("pk");
 
         databaseDates = itemDatesPhone = new DatabaseDates(this);
         databaseItems2=new DatabaseItems(this);
@@ -256,7 +256,7 @@ public class ItemsTaken extends AppCompatActivity {
                         cursor.getInt(3),
                         cursor.getInt(4),
                         cursor.getString(5),
-                        cursor.getInt(6));
+                        cursor.getString(6));
 
                 arraylist.add(constructorlList);
 
@@ -378,7 +378,7 @@ public class ItemsTaken extends AppCompatActivity {
                         cursor1.getInt(3),
                         cursor1.getInt(4),
                         cursor1.getString(5),
-                        cursor1.getInt(6));
+                        cursor1.getString(6));
 
                 dateArraylist.add(constructorDate);
             }
@@ -411,22 +411,18 @@ public class ItemsTaken extends AppCompatActivity {
             while (cursor.moveToNext()) {
 
                 ConstructorItems constructorItems = new ConstructorItems(
-                        cursor.getInt(0),
+                        cursor.getString(0),
                         cursor.getString(1),
                         cursor.getString(2),
                         cursor.getString(3),
                         cursor.getInt(4),
                         cursor.getString(5),
-                        cursor.getInt(6)
+                        cursor.getString(6)
                 );
                 itemsList.add(constructorItems);
             }
 
 
-            for (ConstructorItems constructorItems : itemsList) {
-
-
-            }
 
         }
 

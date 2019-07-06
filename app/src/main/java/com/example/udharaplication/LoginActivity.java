@@ -37,12 +37,13 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseUser firebaseAuth;
     private FirebaseAuth firebaseAuthAccount, firebaseAuthEmailVerify;
     private BottomSheetBehavior bottomSheetBehavior;
-    private TextView signup, back, forgetPassword;
+    private TextView signup, back, forgetPassword,Resend;
     private ScrollView bottomsheet;
     private EditText Email, Password, Confirm, EmailLogin, PasswordLogin;
     private String EmailString, PasswordString, ConfirmString, EmailStringLogin, PasswordStringLogin;
     private Button SignUpButton, LoginButton;
     private RelativeLayout relativeLayout;
+    private FirebaseUser getFirebaseAuthAccount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         PasswordLogin = findViewById(R.id.password);
         progressBarLogin = findViewById(R.id.progressBarLogin);
         forgetPassword = findViewById(R.id.forgetPassword);
+        Resend=findViewById(R.id.Resend);
 
 
         progressBarSignup.setVisibility(View.INVISIBLE);
@@ -79,12 +81,13 @@ public class LoginActivity extends AppCompatActivity {
 
 
         if (firebaseAuth != null) {
-            intentContactList = new Intent(this, contactlist.class);
-            intentContactList.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intentContactList);
-            finishAndRemoveTask();
+            if (firebaseAuth.isEmailVerified()) {
+                intentContactList = new Intent(this, contactlist.class);
+                intentContactList.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intentContactList);
+                finishAndRemoveTask();
+            }
         }
-
 
 /*****************************************Bottom sheet **********************************/
         signup.setOnClickListener(new View.OnClickListener() {
@@ -222,6 +225,98 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
+
+        //resend Verification link
+
+        Resend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+
+
+                EmailStringLogin = EmailLogin.getText().toString().trim();
+                PasswordStringLogin = PasswordLogin.getText().toString().trim();
+
+
+                if (EmailStringLogin.isEmpty()) {
+                    EmailLogin.setError("empty");
+                    return;
+                } else if (PasswordStringLogin.isEmpty()) {
+                    PasswordLogin.setError("empty");
+                    return;
+                }
+                else {
+
+                    progressBarLogin.setVisibility(View.VISIBLE);
+
+                    progressBarLogin.setVisibility(View.VISIBLE);
+
+                    firebaseAuthEmailVerify.signInWithEmailAndPassword(EmailStringLogin,PasswordStringLogin).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+
+                            if (task.isSuccessful()) {
+
+
+                                getFirebaseAuthAccount = FirebaseAuth.getInstance().getCurrentUser();
+                                assert getFirebaseAuthAccount != null;
+
+                                if (!getFirebaseAuthAccount.isEmailVerified()) {
+
+                                    getFirebaseAuthAccount.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+
+                                            if (task.isSuccessful()) {
+
+                                                AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this, R.style.Alert);
+                                                alert.setTitle("Verify link");
+                                                alert.setIcon(R.drawable.ic_info_outline_black_24dp);
+                                                alert.setMessage("Successfully sent..").show();
+                                                progressBarLogin.setVisibility(View.INVISIBLE);
+
+                                            } else {
+
+                                                AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this, R.style.Alert);
+                                                alert.setTitle("Verify link");
+
+                                                alert.setIcon(R.drawable.ic_info_outline_black_24dp);
+                                                alert.setMessage("Something went wrong..").show();
+                                                progressBarLogin.setVisibility(View.INVISIBLE);
+
+                                            }
+
+                                        }
+                                    });
+
+
+                                }
+                                else{
+                                    AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this, R.style.Alert);
+                                    alert.setTitle("Verify link");
+
+                                    alert.setIcon(R.drawable.ic_info_outline_black_24dp);
+                                    alert.setMessage("Already verified").show();
+                                    progressBarLogin.setVisibility(View.INVISIBLE);
+
+
+                                }
+
+                            }
+
+                        }
+                    });
+
+
+                }
+
+
+                }
+        });
+
+
+
     }
 
     private void isVerified() {
@@ -255,13 +350,14 @@ public class LoginActivity extends AppCompatActivity {
                             progressBarLogin.setVisibility(View.INVISIBLE);
                             startActivity(new Intent(LoginActivity.this, contactlist.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             finish();
+
                         } else {
 
                             AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this,R.style.Alert);
                             alert.setTitle("Verify link");
                             alert.setTitle("Info");
                             alert.setIcon(R.drawable.ic_info_outline_black_24dp);
-                            alert.setMessage("Verify link sent to your Email").show();
+                            alert.setMessage("First verify the link... sent to your Email").show();
                             progressBarLogin.setVisibility(View.INVISIBLE);
 
 
@@ -281,6 +377,11 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
         }
+
+
+
+
+
 
     }
 
@@ -329,6 +430,8 @@ public class LoginActivity extends AppCompatActivity {
 
 
                     firebaseAuth = FirebaseAuth.getInstance().getCurrentUser();
+
+
                     firebaseAuth.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {

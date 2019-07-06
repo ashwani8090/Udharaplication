@@ -31,17 +31,18 @@ public class DatabaseItems extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
 
-        db.execSQL("create table " + TABLE_NAME + "( ID INTEGER PRIMARY KEY AUTOINCREMENT,DATES,ITEM_NAME,PHONE,AMOUNT INTEGER,DESCRIPTION,PK INTEGER, FOREIGN KEY(PK) REFERENCES Contacts(PK) )");
+        db.execSQL("create table " + TABLE_NAME + "( ID  PRIMARY KEY ,DATES,ITEM_NAME,PHONE,AMOUNT INTEGER,DESCRIPTION" + ",PK , FOREIGN KEY(PK) REFERENCES Contacts(PK) )");
 
     }
 
 
-    public boolean InsertDates(String dates, String itemnames,
-                                 String phone,Integer amount,  String description,Integer Pk) {
+    public boolean InsertDates(String Id,String dates, String itemnames,
+                                 String phone,Integer amount,  String description,String Pk) {
 
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        contentValues.put(ID,Id);
         contentValues.put(DATES, dates);
         contentValues.put(ITEM_NAME, itemnames);
         contentValues.put(DESCRIPTION, description);
@@ -58,8 +59,8 @@ public class DatabaseItems extends SQLiteOpenHelper {
     }
 
 
-    public boolean InsertAfterDeleteItem(Integer Id,String dates, String itemnames,
-                               String phone,Integer amount,  String description,Integer pk) {
+    public boolean InsertAfterDeleteItem(String Id,String dates, String itemnames,
+                               String phone,Integer amount,  String description,String pk) {
 
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -89,18 +90,24 @@ public class DatabaseItems extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public Cursor getUniqueAll(Integer ID) {
+    public Cursor getUniqueAll(String ID) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_NAME + " where ID=?", new String[]{String.valueOf(ID)});
+        Cursor cursor = db.rawQuery("select * from " + TABLE_NAME + " where ID=?", new String[]{ID});
         return cursor;
+    }
+
+    public Cursor AllDataFirabaseItems() {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        Cursor cursor = sqLiteDatabase.rawQuery(" select * from " + TABLE_NAME,null);
+        return cursor;
+
     }
 
 
 
-
-    public Integer deleteData(Integer row) {
+    public Integer deleteData(String row) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TABLE_NAME, "ID=?", new String[]{String.valueOf(row)});
+        return db.delete(TABLE_NAME, "ID=?", new String[]{row});
 
     }
 
@@ -118,34 +125,34 @@ public class DatabaseItems extends SQLiteOpenHelper {
     }
 
 
-    public boolean upDate(Integer ID,Integer amount,String des ) {
+    public boolean upDate(String ID,Integer amount,String des ) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(AMOUNT,amount);
         contentValues.put(DESCRIPTION,des);
-        db.update(TABLE_NAME, contentValues, "ID=?", new String[]{String.valueOf(ID)});
+        db.update(TABLE_NAME, contentValues, "ID=?", new String[]{ID});
         return true;
 
     }
 
 
 
-    public  boolean UpDatePhone(Integer pk,String newphone){
+    public  boolean UpDatePhone(String pk,String newphone){
 
         SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
         ContentValues contentValues=new ContentValues();
         contentValues.put(PHONE,newphone);
-        sqLiteDatabase.update(TABLE_NAME,contentValues, "PK=?",new String[]{String.valueOf(pk)});
+        sqLiteDatabase.update(TABLE_NAME,contentValues, "PK=?",new String[]{pk});
         return  true;
 
     }
 
 
 
-    public Cursor GetAllwithPhone(Integer pk) {
+    public Cursor GetAllwithPhone(String pk) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_NAME + " where PK=?", new String[]{String.valueOf(pk)});
+        Cursor cursor = db.rawQuery("select * from " + TABLE_NAME + " where PK=?", new String[]{pk});
         return cursor;
     }
 
@@ -165,10 +172,10 @@ public class DatabaseItems extends SQLiteOpenHelper {
 
 
 
-    public Integer DeleteAllofPhone(Integer PK){
+    public Integer DeleteAllofPhone(String PK){
 
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TABLE_NAME, "PK=?", new String[]{String.valueOf(PK)});
+        return db.delete(TABLE_NAME, "PK=?", new String[]{PK});
 
 
     }

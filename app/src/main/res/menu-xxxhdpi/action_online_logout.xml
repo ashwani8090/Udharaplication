@@ -3,21 +3,14 @@
 
 
 
-   <!-- <item
-        android:id="@+id/backup"
-        android:title="Backup data"
-
-        />
-
-    <item
-        android:id="@+id/onlinemode"
-        android:title="Online mode"
-        />-->
-
     <item
         android:id="@+id/logout_button"
-        android:title="Logout"
+        android:title="@string/logout"
         />
 
+
+    <item
+        android:id="@+id/download"
+        android:title="@string/download_data"/>
 
 </menu>

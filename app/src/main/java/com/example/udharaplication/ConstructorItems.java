@@ -5,7 +5,7 @@ public class ConstructorItems {
     //ID INTEGER PRIMARY KEY AUTOINCREMENT,DATES,ITEM_NAME,PHONE,AMOUNT INTEGER,DESCRIPTION, FOREIGN KEY(PHONE) REFERENCES Contacts(Phone) )");
 
 
-    private Integer ID,Pk;
+    private String ID,Pk;
     private String DATES,ITEM_NAME,PHONE;
     private Integer AMOUNT;
     private String DESCRIPTION;
@@ -16,7 +16,7 @@ public class ConstructorItems {
     }
 
 
-    public ConstructorItems(Integer ID, String DATES, String ITEM_NAME, String PHONE, Integer AMOUNT, String DESCRIPTION,Integer Pk) {
+    public ConstructorItems(String ID, String DATES, String ITEM_NAME, String PHONE, Integer AMOUNT, String DESCRIPTION,String Pk) {
         this.ID = ID;
         this.DATES = DATES;
         this.ITEM_NAME = ITEM_NAME;
@@ -24,14 +24,6 @@ public class ConstructorItems {
         this.AMOUNT = AMOUNT;
         this.DESCRIPTION = DESCRIPTION;
         this.Pk=Pk;
-    }
-
-    public Integer getID() {
-        return ID;
-    }
-
-    public void setID(Integer ID) {
-        this.ID = ID;
     }
 
     public String getDATES() {
@@ -66,11 +58,19 @@ public class ConstructorItems {
         this.AMOUNT = AMOUNT;
     }
 
-    public Integer getPk() {
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
+    }
+
+    public String getPk() {
         return Pk;
     }
 
-    public void setPk(Integer pk) {
+    public void setPk(String pk) {
         Pk = pk;
     }
 

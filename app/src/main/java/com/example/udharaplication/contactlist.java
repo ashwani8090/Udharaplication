@@ -6,17 +6,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
-import android.os.PersistableBundle;
+import android.os.Message;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -29,37 +26,56 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ContextThemeWrapper;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 public class contactlist extends AppCompatActivity {
 
 
+    public ProgressBar progressBar;
     private static long position = 0;
+    private AlertDialog.Builder alert;
+    private List<ContactConstructorlList> ContactList = new ArrayList<>();
+    private List<ConstructorItems> itemsList = new ArrayList<>();
+    private List<ConstructorDate> dateArraylist = new ArrayList<>();
+    private DatabaseItems databaseItems;
+    private DatabaseDates databaseDates;
+    private DatabaseReference firebaseDatabaseContacts;
+    private DatabaseReference firebaseDatabaseItems;
+    private DatabaseReference firebaseDatabaseDates;
+
+
     private TextView info;
     private SharedPreferences sharedPreferences;
     private PopupMenu popupMenu, popupMenu2;
@@ -68,7 +84,7 @@ public class contactlist extends AppCompatActivity {
     private ArrayAdapter<String> arrayAdapter;
     private Animation animation, animation2;
     private RelativeLayout Visible_layout;
-    private TextView Search_icon;
+    private TextView Search_icon,Upload_cloud;
     private AutoCompleteTextView Search_bar;
     private DatabaseItems datesPhone;
     private RecyclerView recyclerView;
@@ -84,7 +100,6 @@ public class contactlist extends AppCompatActivity {
     private FloatingActionButton floatingActionButtonAddcontact;
     private EditText Name, PhoneNumber;
     private String PhoneString = "", NameString, DateString;
-    private AlertDialog.Builder alert;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -96,6 +111,8 @@ public class contactlist extends AppCompatActivity {
         arrayList.clear();
 
 
+        progressBar=findViewById(R.id.cloudprogress);
+        Upload_cloud=findViewById(R.id.cloud);
         info = findViewById(R.id.info);
         Visible_layout = findViewById(R.id.searching_relative);
         Search_bar = findViewById(R.id.search_bar);
@@ -120,6 +137,25 @@ public class contactlist extends AppCompatActivity {
         datesPhone = new DatabaseItems(this);
         dataBaseHelperClass = new DataBaseHelperClass(this);
 
+        databaseDates = new DatabaseDates(this);
+        databaseItems = new DatabaseItems(this);
+
+        firebaseDatabaseContacts = FirebaseDatabase.getInstance().getReference(""+firebaseAuth.getUid()).child("CONTACTS");
+        firebaseDatabaseDates = FirebaseDatabase.getInstance().getReference(""+firebaseAuth.getUid()).child("DATES");
+        firebaseDatabaseItems = FirebaseDatabase.getInstance().getReference(""+firebaseAuth.getUid()).child("ITEMS");
+
+
+
+
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(contactlist.this,R.style.Alert);
+        alert.setTitle("Info");
+        alert.setIcon(R.drawable.ic_cloud_upload_black_24dp);
+        alert.setMessage("Before closing application upload your data online by clicking cloud so that it can access from anywhere.").show();
+
+
+
+
         //database code
 
         try {
@@ -131,6 +167,7 @@ public class contactlist extends AppCompatActivity {
 
         //popupcode
 
+        logout.setVisibility(View.VISIBLE);
 
         Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenu);
         popupMenu = new PopupMenu(wrapper, logout);
@@ -150,22 +187,23 @@ public class contactlist extends AppCompatActivity {
                 if (NameString.isEmpty()) {
                     Toast.makeText(contactlist.this, "Name must be there", Toast.LENGTH_SHORT).show();
                     return;
-                }
-               else if ((!PhoneString.isEmpty())&& (PhoneString.length() < 10)){
+                } else if ((!PhoneString.isEmpty()) && (PhoneString.length() < 10)) {
 
 
-                        Toast.makeText(contactlist.this, "Phone Number is badly formatted", Toast.LENGTH_SHORT).show();
-                        return;
+                    Toast.makeText(contactlist.this, "Phone Number is badly formatted", Toast.LENGTH_SHORT).show();
+                    return;
 
-                }
-                else {
+                } else {
+                    String DateString = DateFormat.getDateTimeInstance().format(new Date());
+
                     NameString = Name.getText().toString().trim().substring(0, 1).toUpperCase() + Name.getText().toString().trim().substring(1);
 
-                    boolean isInserted = dataBaseHelperClass.insertData(PhoneString, NameString);
+                    boolean isInserted = dataBaseHelperClass.insertData(DateString,PhoneString, NameString);
                     if (isInserted) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                             onStart();
-                            Vibrator vibrator= (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                             vibrator.vibrate(200);
                         }
                         Toast.makeText(contactlist.this, "Added", Toast.LENGTH_SHORT).show();
@@ -197,21 +235,29 @@ public class contactlist extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
 
-               /* if (R.id.onlinemode == item.getItemId()) {
-                    Toast.makeText(contactlist.this, "Online", Toast.LENGTH_SHORT).show();
-                    return true;
-                }*/
+
                 if (R.id.logout_button == item.getItemId()) {
                     startActivity(new Intent(contactlist.this, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                     firebaseAuth.signOut();
                     return true;
                 }
 
-                    /*
-                } else if (R.id.backup == item.getItemId()) {
-                    Toast.makeText(contactlist.this, "backing up data..requested to on internet", Toast.LENGTH_SHORT).show();
+                if (R.id.download == item.getItemId()) {
+                    OnlineMode();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+
+                      Handler handler=new Handler();
+                      Toast.makeText(contactlist.this, "loading..", Toast.LENGTH_SHORT).show();
+
+                      handler.postDelayed(new Runnable() {
+                          @Override
+                          public void run() {
+                              onStart();
+                          }
+                      },7000);
+                    }
                     return true;
-                }*/
+                }
 
 
                 return false;
@@ -223,6 +269,7 @@ public class contactlist extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 popupMenu2.show();
+
             }
         });
 
@@ -234,10 +281,16 @@ public class contactlist extends AppCompatActivity {
             public void onStateChanged(@NonNull View view, int i) {
 
                 if (i == BottomSheetBehavior.STATE_COLLAPSED) {
+                    floatingActionButtonAddcontact.setImageResource(R.drawable.addcontact);
                     Name.setText("");
                     PhoneNumber.setText("");
+
                 }
 
+                if (i == BottomSheetBehavior.STATE_EXPANDED) {
+                    floatingActionButtonAddcontact.setImageResource(R.drawable.ic_close_black_24dp);
+
+                }
 
             }
 
@@ -270,6 +323,7 @@ public class contactlist extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+
                 animation = AnimationUtils.loadAnimation(contactlist.this, R.anim.scaling_anime);
                 Visible_layout.setVisibility(View.VISIBLE);
                 logout.setVisibility(View.INVISIBLE);
@@ -277,6 +331,7 @@ public class contactlist extends AppCompatActivity {
                 Search_bar.setCursorVisible(true);
                 Search_icon.setVisibility(View.INVISIBLE);
                 Visible_layout.setAnimation(animation);
+                Upload_cloud.setVisibility(View.INVISIBLE);
 
 
             }
@@ -297,6 +352,7 @@ public class contactlist extends AppCompatActivity {
                         Search_bar.setText("");
                         info.setVisibility(View.VISIBLE);
                         Search_bar.setCursorVisible(false);
+                        Upload_cloud.setVisibility(View.VISIBLE);
                         Search_icon.setVisibility(View.VISIBLE);
                         Visible_layout.setAnimation(animation2);
                         return true;
@@ -328,6 +384,36 @@ public class contactlist extends AppCompatActivity {
 
             }
         });
+
+
+
+
+        // cloud th information
+        Upload_cloud.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                progressBar.setVisibility(View.VISIBLE);
+                DatesTable();
+                ItemsTable();
+                BackUpTheData();
+                Toast.makeText(contactlist.this, "backing up data..requested to on internet", Toast.LENGTH_SHORT).show();
+
+
+
+
+            }
+        });
+
+
+
+
+
+
+
+
+
 
 
     }
@@ -368,7 +454,7 @@ public class contactlist extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
 
-                        dataBaseHelperClass.insertData(item.getPhone(), item.getName());
+                        dataBaseHelperClass.insertData(item.getPk(),item.getPhone(), item.getName());
                         adapterContact.restoreItem(item, position);
                         recyclerView.scrollToPosition(position);
 
@@ -419,11 +505,21 @@ public class contactlist extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+
+
+/*
+
+        AlertDialog.Builder allert=new AlertDialog.Builder(contactlist.this,R.style.Alert);
+        allert.setTitle("Info").
+                setIcon(R.drawable.ic_info_outline_black_24dp).
+                setMessage("Backup you data before closing app...").show();
+*/
+
+
         finish();
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onStart() {
         super.onStart();
@@ -446,7 +542,7 @@ public class contactlist extends AppCompatActivity {
             while (cursor.moveToNext()) {
 
                 ContactConstructorlList constructorlList = new
-                        ContactConstructorlList(cursor.getInt(0),
+                        ContactConstructorlList(cursor.getString(0),
                         cursor.getString(1),
                         cursor.getString(2));
                 arrayList.add(constructorlList);
@@ -460,7 +556,9 @@ public class contactlist extends AppCompatActivity {
 
             try {
 
-                arrayList.sort(new sortByName());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    arrayList.sort(new sortByName());
+                }
             } catch (Exception e) {
 
             }
@@ -499,6 +597,10 @@ public class contactlist extends AppCompatActivity {
             stringList.clear();
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
+            logout.setVisibility(View.INVISIBLE);
+            info.setVisibility(View.VISIBLE);
+            Upload_cloud.setVisibility(View.VISIBLE);
+
 
         } catch (Exception e) {
 
@@ -532,6 +634,272 @@ public class contactlist extends AppCompatActivity {
         editor.putLong("position1", position).apply();
 
 
+
+    }
+
+    public void BackUpTheData() {
+
+
+        for (ContactConstructorlList constructorlList : arrayList) {
+
+            firebaseDatabaseContacts.child("" + constructorlList.getPk()).setValue(constructorlList).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                    } else {
+
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    AlertDialog.Builder   error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
+                    error.setMessage("Check internet connection...");
+                    error.show();
+
+                    progressBar.setVisibility(View.INVISIBLE);
+
+                }
+            });
+
+
+        }
+
+
+        for (ConstructorDate constructorDate : dateArraylist) {
+
+            firebaseDatabaseDates.child("" + constructorDate.getDATE()).setValue(constructorDate).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+
+                    } else {
+                        progressBar.setVisibility(View.INVISIBLE);
+                        Toast.makeText(contactlist.this, "Check internet", Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+            });
+
+
+        }
+
+        for (ConstructorItems constructorItems : itemsList) {
+
+            firebaseDatabaseItems.child("" + constructorItems.getID()).setValue(constructorItems).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+
+                        progressBar.setVisibility(View.INVISIBLE);
+                        Toast.makeText(contactlist.this, " Uploading..", Toast.LENGTH_SHORT).show();
+                    } else {
+                        AlertDialog.Builder   error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
+                        error.setMessage("Error..Check internet connection");
+                        error.show();
+                        progressBar.setVisibility(View.INVISIBLE);
+
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    AlertDialog.Builder   error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
+                    error.setTitle("Error");
+                    error.setIcon(R.drawable.ic_error_outline_black_24dp);
+                    error.setMessage("" + e.getMessage()).show() ;
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+            });
+
+
+        }
+
+
+    }
+
+
+    // ONLINE THE DATA :
+
+    public void ItemsTable() {
+
+        itemsList.clear();
+        Cursor cursor = databaseItems.AllDataFirabaseItems();
+
+        if (cursor.getCount() == 0) {
+            Toast.makeText(this, "Nothing to take backup", Toast.LENGTH_SHORT).show();
+            return;
+        } else {
+
+            while (cursor.moveToNext()) {
+
+                ConstructorItems constructorItems = new ConstructorItems(
+                        cursor.getString(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getInt(4),
+                        cursor.getString(5),
+                        cursor.getString(6));
+                itemsList.add(constructorItems);
+            }
+
+
+        }
+
+
+    }
+
+    public void DatesTable() {
+
+        dateArraylist.clear();
+        Cursor cursor1 = databaseDates.AllDataFirabaseDates();
+        if (cursor1.getCount() == 0) {
+            Toast.makeText(this, "Nothing to take backup", Toast.LENGTH_SHORT).show();
+        } else {
+
+            while (cursor1.moveToNext()) {
+
+                ConstructorDate constructorDate = new ConstructorDate(cursor1.getString(0),
+                        cursor1.getString(1),
+                        cursor1.getInt(2),
+                        cursor1.getInt(3),
+                        cursor1.getInt(4),
+                        cursor1.getString(5),
+                        cursor1.getString(6));
+
+                dateArraylist.add(constructorDate);
+            }
+
+
+        }
+
+
+    }
+
+    public void OnlineMode() {
+
+
+        ContactList.clear();
+        itemsList.clear();
+        dateArraylist.clear();
+        firebaseDatabaseContacts.child("").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+
+                    ContactConstructorlList constructorlList = dataSnapshot1.getValue(ContactConstructorlList.class);
+
+                    ContactList.add(constructorlList);
+
+                }
+
+
+                for (ContactConstructorlList constructorlList : ContactList) {
+                    dataBaseHelperClass.InsertFirebase(
+                            constructorlList.getPk(),
+                            constructorlList.getPhone(),
+                            constructorlList.getName());
+
+
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                AlertDialog.Builder   error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
+                error.setTitle("Error");
+                error.setIcon(R.drawable.ic_error_outline_black_24dp);
+                error.setMessage(""+databaseError.getMessage()).show() ;
+            }
+        });
+
+
+        firebaseDatabaseItems.child("").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+
+                    ConstructorItems constructorItems = dataSnapshot1.getValue(ConstructorItems.class);
+
+                    itemsList.add(constructorItems);
+
+                }
+
+                for (ConstructorItems constructorlList : itemsList) {
+                    databaseItems.InsertAfterDeleteItem(
+                            constructorlList.getID(),
+                            constructorlList.getDATES(),
+                            constructorlList.getITEM_NAME(),
+                            constructorlList.getPHONE(),
+                            constructorlList.getAMOUNT(),
+                            constructorlList.getDESCRIPTION(),
+                            constructorlList.getPk()
+                    );
+
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                AlertDialog.Builder   error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
+                error.setTitle("Error");
+                error.setIcon(R.drawable.ic_error_outline_black_24dp);
+                error.setMessage(""+databaseError.getMessage()).show();
+            }
+        });
+
+
+        firebaseDatabaseDates.child("").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+
+                    ConstructorDate constructorDate = dataSnapshot1.getValue(ConstructorDate.class);
+
+                    dateArraylist.add(constructorDate);
+
+                }
+
+                for (ConstructorDate constructorDate : dateArraylist) {
+                    databaseDates.InsertAfterDelete(constructorDate.getDATE(),
+                            constructorDate.getPHONE(),
+                            constructorDate.getRECIEVED(),
+                            constructorDate.getLEFTP(),
+                            constructorDate.getTOTAL(),
+                            constructorDate.getPAID(),
+                            constructorDate.getPK());
+
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                AlertDialog.Builder   error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
+                error.setTitle("Error");
+                error.setIcon(R.drawable.ic_error_outline_black_24dp);
+                error.setMessage(""+databaseError.getMessage()).show();
+            }
+        });
+
+
     }
 
     public class sortByName implements Comparator<ContactConstructorlList> {
@@ -542,5 +910,9 @@ public class contactlist extends AppCompatActivity {
             return o1.getName().compareTo(o2.getName());
         }
     }
+
+
+
+
 }
 

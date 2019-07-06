@@ -34,7 +34,7 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ViewHold
     private ContactConstructorlList constructorlList;
     private List<ContactConstructorlList> list = new ArrayList<>();
     private Context context;
-    private Integer Pk;
+    private String Pk;
 
     public AdapterContact(List<ContactConstructorlList> list, Context context) {
         this.list = list;

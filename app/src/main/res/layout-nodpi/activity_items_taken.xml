@@ -49,14 +49,14 @@
 
 
             <TextView
-               android:id="@+id/deleteall"
+                android:id="@+id/deleteall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/ic_delete_black_24dp"
                 android:layout_alignBaseline="@id/TotalAmountItem"
                 android:layout_marginStart="10dp"
 
-               />
+                />
 
 
 
@@ -98,7 +98,6 @@
         android:id="@+id/searching"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_gravity="center_vertical"
         android:layout_margin="5dp"
         android:background="@drawable/navigationbackground"
         android:backgroundTint="#D00F0F0F"

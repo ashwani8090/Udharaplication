@@ -3,14 +3,14 @@ package com.example.udharaplication;
 public class ConstructorDate {
 
 
-    private String DATE,PHONE;
-    private Integer RECIEVED,LEFTP,TOTAL,PK;
+    private String DATE,PHONE,PK;
+    private Integer RECIEVED,LEFTP,TOTAL;
     private String PAID;
 
     public ConstructorDate() {
     }
 
-    public ConstructorDate(String DATE, String PHONE, Integer RECIEVED, Integer LEFTP, Integer TOTAL, String PAID,Integer PK) {
+    public ConstructorDate(String DATE, String PHONE, Integer RECIEVED, Integer LEFTP, Integer TOTAL, String PAID,String PK) {
         this.DATE = DATE;
         this.PHONE = PHONE;
         this.RECIEVED = RECIEVED;
@@ -68,11 +68,11 @@ public class ConstructorDate {
         this.PAID = PAID;
     }
 
-    public Integer getPK() {
+    public String getPK() {
         return PK;
     }
 
-    public void setPK(Integer PK) {
+    public void setPK(String PK) {
         this.PK = PK;
     }
 }
