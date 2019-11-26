@@ -10,7 +10,7 @@
     android:clickable="true"
     android:focusable="true"
     app:cardCornerRadius="10dp"
-    tools:context=".contactlist">
+    tools:context=".ContactList">
 
     <RelativeLayout
         android:layout_width="match_parent"

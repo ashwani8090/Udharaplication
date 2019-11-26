@@ -3,9 +3,6 @@ package com.example.udharaplication;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.NotificationChannel;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -66,12 +63,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-public class contactlist extends AppCompatActivity {
+public class ContactList extends AppCompatActivity {
 
     private static final int REQUEST_CODE = 1;
     private static long position = 0;
@@ -165,7 +161,7 @@ public class contactlist extends AppCompatActivity {
         firebaseDatabaseItems = FirebaseDatabase.getInstance().getReference("" + firebaseAuth.getUid()).child("ITEMS");
 
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(contactlist.this, R.style.Alert);
+        AlertDialog.Builder alert = new AlertDialog.Builder(com.example.udharaplication.ContactList.this, R.style.Alert);
         alert.setTitle("Info");
         alert.setIcon(R.drawable.ic_cloud_upload_black_24dp);
         alert.setMessage("Before closing application upload your data online by clicking cloud so that it can access from anywhere.").show();
@@ -211,7 +207,7 @@ public class contactlist extends AppCompatActivity {
                     if (event.getRawX() >= Search_bar.getRight() - Search_bar.getTotalPaddingRight()) {
 
 
-                        if (ContextCompat.checkSelfPermission(contactlist.this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                        if (ContextCompat.checkSelfPermission(com.example.udharaplication.ContactList.this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                 requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE);
@@ -260,7 +256,7 @@ public class contactlist extends AppCompatActivity {
                 for (ContactConstructorlList constructorlList : arrayList) {
 
                     if (constructorlList.getPhone().equals(PhoneString) && PhoneString.length() == 13) {
-                        Toast.makeText(contactlist.this,
+                        Toast.makeText(com.example.udharaplication.ContactList.this,
                                 "Phone Number Already exist for " + constructorlList.getPhone(), Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -269,12 +265,12 @@ public class contactlist extends AppCompatActivity {
 
 
                 if (NameString.isEmpty()) {
-                    Toast.makeText(contactlist.this, "Name must be there", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(com.example.udharaplication.ContactList.this, "Name must be there", Toast.LENGTH_SHORT).show();
                     return;
                 } else if ((!PhoneString.isEmpty()) && (PhoneString.length() != 13)) {
 
 
-                    Toast.makeText(contactlist.this, "Phone Number is badly formatted", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(com.example.udharaplication.ContactList.this, "Phone Number is badly formatted", Toast.LENGTH_SHORT).show();
                     return;
 
                 } else {
@@ -293,9 +289,9 @@ public class contactlist extends AppCompatActivity {
                             PhoneNumber.setText("");
 
                         }
-                        Toast.makeText(contactlist.this, "Added", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(com.example.udharaplication.ContactList.this, "Added", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(contactlist.this, "Not Inserted", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(com.example.udharaplication.ContactList.this, "Not Inserted", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -322,7 +318,7 @@ public class contactlist extends AppCompatActivity {
 
                 if (R.id.logout_button == item.getItemId()) {
 
-                    final AlertDialog.Builder alert = new AlertDialog.Builder(contactlist.this, R.style.Alert);
+                    final AlertDialog.Builder alert = new AlertDialog.Builder(com.example.udharaplication.ContactList.this, R.style.Alert);
                     alert.setTitle("Warning");
                     alert.setIcon(R.drawable.ic_warning_black_24dp);
                     alert.setMessage("Logging out  will delete your data don't forget to backup your data to download it again!");
@@ -335,7 +331,7 @@ public class contactlist extends AppCompatActivity {
                             databaseDates.onUpgrade(databaseDates.getWritableDatabase(), 1, 2);
                             databaseItems.onUpgrade(databaseItems.getReadableDatabase(), 1, 2);
 
-                            startActivity(new Intent(contactlist.this, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                            startActivity(new Intent(com.example.udharaplication.ContactList.this, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             firebaseAuth.signOut();
                             finish();
                         }
@@ -369,7 +365,7 @@ public class contactlist extends AppCompatActivity {
 
                         Handler handler = new Handler();
                         if (isNetworkConnected()) {
-                            Toast.makeText(contactlist.this, "loading..", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(com.example.udharaplication.ContactList.this, "loading..", Toast.LENGTH_SHORT).show();
                         }
                         handler.postDelayed(new Runnable() {
                             @Override
@@ -445,7 +441,7 @@ public class contactlist extends AppCompatActivity {
             public void onClick(View v) {
 
 
-                animation = AnimationUtils.loadAnimation(contactlist.this, R.anim.scaling_anime);
+                animation = AnimationUtils.loadAnimation(com.example.udharaplication.ContactList.this, R.anim.scaling_anime);
                 Visible_layout.setVisibility(View.VISIBLE);
                 logout.setVisibility(View.INVISIBLE);
                 info.setVisibility(View.INVISIBLE);
@@ -469,7 +465,7 @@ public class contactlist extends AppCompatActivity {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     if (event.getRawX() >= Search_bar.getRight() - Search_bar.getTotalPaddingRight()) {
 
-                        animation2 = AnimationUtils.loadAnimation(contactlist.this, R.anim.serach_close);
+                        animation2 = AnimationUtils.loadAnimation(com.example.udharaplication.ContactList.this, R.anim.serach_close);
                         Visible_layout.setVisibility(View.INVISIBLE);
                         logout.setVisibility(View.VISIBLE);
                         Search_bar.setText("");
@@ -523,7 +519,7 @@ public class contactlist extends AppCompatActivity {
                 DatesTable();
                 ItemsTable();
                 BackUpTheData();
-                Toast.makeText(contactlist.this, "backing up data..Requested to on internet", Toast.LENGTH_SHORT).show();
+                Toast.makeText(com.example.udharaplication.ContactList.this, "backing up data..Requested to on internet", Toast.LENGTH_SHORT).show();
 
 
             }
@@ -547,7 +543,7 @@ public class contactlist extends AppCompatActivity {
 
             Handler handler = new Handler();
             if (isNetworkConnected()) {
-                Toast.makeText(contactlist.this, "loading..", Toast.LENGTH_SHORT).show();
+                Toast.makeText(com.example.udharaplication.ContactList.this, "loading..", Toast.LENGTH_SHORT).show();
             }
             handler.postDelayed(new Runnable() {
                 @Override
@@ -667,7 +663,7 @@ public class contactlist extends AppCompatActivity {
                 snackbar.setActionTextColor(Color.YELLOW);
                 adapterContact.removeItem(position);
 
-                alert = new AlertDialog.Builder(contactlist.this);
+                alert = new AlertDialog.Builder(com.example.udharaplication.ContactList.this);
 
                 alert.setMessage("Do you want to delete?").setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
@@ -762,7 +758,7 @@ public class contactlist extends AppCompatActivity {
             recyclerView.setAdapter(adapterContact);
             recyclerView.setLayoutManager(linearLayoutManager);
 
-            arrayAdapter = new ArrayAdapter<String>(contactlist.this,
+            arrayAdapter = new ArrayAdapter<String>(com.example.udharaplication.ContactList.this,
                     android.R.layout.simple_list_item_1, stringList);
             Search_bar.setAdapter(arrayAdapter);
 
@@ -780,7 +776,7 @@ public class contactlist extends AppCompatActivity {
 
 
         }
-        broadcastReceiver = new InternetBroadcast(contactlist.this);
+        broadcastReceiver = new InternetBroadcast(com.example.udharaplication.ContactList.this);
         IntentFilter intentFilter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
         registerReceiver(broadcastReceiver, intentFilter);
 
@@ -839,7 +835,7 @@ public class contactlist extends AppCompatActivity {
 
     public void BackUpTheData() {
         if (!isNetworkConnected()) {
-            AlertDialog.Builder error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
+            AlertDialog.Builder error = new AlertDialog.Builder(com.example.udharaplication.ContactList.this, R.style.Alert);
             error.setTitle("Error");
             error.setIcon(R.drawable.ic_error_outline_black_24dp);
 
@@ -880,7 +876,7 @@ public class contactlist extends AppCompatActivity {
 
                         } else {
                             progressBar.setVisibility(View.INVISIBLE);
-                            Toast.makeText(contactlist.this, "Check internet", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(com.example.udharaplication.ContactList.this, "Check internet", Toast.LENGTH_SHORT).show();
 
 
                         }
@@ -906,14 +902,14 @@ public class contactlist extends AppCompatActivity {
                                 if (task.isSuccessful()) {
 
                                     progressBar.setVisibility(View.INVISIBLE);
-                                    Toast.makeText(contactlist.this, " Uploading..", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(com.example.udharaplication.ContactList.this, " Uploading..", Toast.LENGTH_SHORT).show();
                                 }
 
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        AlertDialog.Builder error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
+                        AlertDialog.Builder error = new AlertDialog.Builder(com.example.udharaplication.ContactList.this, R.style.Alert);
                         error.setTitle("Error");
                         error.setIcon(R.drawable.ic_error_outline_black_24dp);
                         error.setMessage("" + e.getMessage()).show();
@@ -991,7 +987,7 @@ public class contactlist extends AppCompatActivity {
 
 
         if (!isNetworkConnected()) {
-            AlertDialog.Builder error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
+            AlertDialog.Builder error = new AlertDialog.Builder(com.example.udharaplication.ContactList.this, R.style.Alert);
             error.setTitle("Error");
             error.setIcon(R.drawable.ic_error_outline_black_24dp);
 
@@ -1107,7 +1103,7 @@ public class contactlist extends AppCompatActivity {
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                     try {
-                        AlertDialog.Builder error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
+                        AlertDialog.Builder error = new AlertDialog.Builder(com.example.udharaplication.ContactList.this, R.style.Alert);
                         error.setTitle("Error");
                         error.setIcon(R.drawable.ic_error_outline_black_24dp);
                         error.setMessage("" + databaseError.getMessage()).show();

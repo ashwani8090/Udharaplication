@@ -4,13 +4,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
-import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -83,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (firebaseAuth != null) {
             if (firebaseAuth.isEmailVerified()) {
-                intentContactList = new Intent(this, contactlist.class);
+                intentContactList = new Intent(this, ContactList.class);
                 intentContactList.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intentContactList);
                 finishAndRemoveTask();
@@ -273,7 +271,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (isVerified) {
 
                             progressBarLogin.setVisibility(View.INVISIBLE);
-                            startActivity(new Intent(LoginActivity.this, contactlist.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                            startActivity(new Intent(LoginActivity.this, ContactList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             finish();
 
                         } else {

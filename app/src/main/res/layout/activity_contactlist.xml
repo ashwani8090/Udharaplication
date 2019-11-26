@@ -5,7 +5,7 @@
     android:id="@+id/relativelayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".contactlist">
+    tools:context=".ContactList">
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/coordinatorlayout"
@@ -143,7 +143,8 @@
             android:layout_marginBottom="60dp"
             android:clickable="true"
             app:backgroundTint="#E4E1E1"
-            app:srcCompat="@drawable/addcontact" />
+            app:srcCompat="@drawable/addcontact"
+            android:focusable="true" />
 
 
         <include layout="@layout/bottomsheetaddcontact" />
