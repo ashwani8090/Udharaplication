@@ -34,7 +34,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="150dp"
                     android:layout_marginBottom="50dp"
-                    android:text="Welcome back!"
+                    android:text="Login Here !"
                     android:textColor="#575454"
                     android:textSize="22sp"
                     android:textStyle="bold" />
@@ -102,42 +102,25 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/loginbutton"
+                    android:layout_centerHorizontal="true"
                     android:layout_marginTop="50dp"
                     android:layout_marginBottom="10dp"
+                    android:background="@drawable/fogetpasword"
+                    android:padding="5dp"
                     android:text="Forget Password?"
                     android:textColor="#EE291C"
-                    android:background="@drawable/fogetpasword"
-                    android:textSize="12sp"
-                    android:padding="5dp"
-                    android:layout_centerHorizontal="true"
-                   />
-
-
-
-                <TextView
-                    android:id="@+id/Resend"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/forgetPassword"
-                    android:layout_marginBottom="10dp"
-                    android:text="Resend Verification link"
-                    android:textColor="#EE291C"
-                    android:textSize="12sp"
-                    android:padding="5dp"
-                    android:layout_centerHorizontal="true"
-                    android:background="@drawable/fogetpasword"
-                  />
-
+                    android:textSize="12sp" />
 
 
                 <TextView
                     android:id="@+id/signup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/Resend"
+                    android:layout_below="@+id/forgetPassword"
+                    android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
 
-                    android:layout_centerHorizontal="true"
+
                     android:text="Don't have an account?"
                     android:textColor="@color/gray" />
 
@@ -145,7 +128,7 @@
                     android:id="@+id/signupbutton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/Resend"
+                    android:layout_below="@+id/forgetPassword"
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="10dp"
                     android:layout_toRightOf="@+id/signup"

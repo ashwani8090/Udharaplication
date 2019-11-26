@@ -28,7 +28,6 @@
         android:layout_toRightOf="@+id/pop_credit"
         android:background="@drawable/textview"
         android:inputType="number"
-        android:text="0"
         android:hint="Enter amount you recived"
         android:textSize="12sp"
         android:paddingStart="10dp"

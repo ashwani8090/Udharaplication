@@ -1,18 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="2dp"
-
+    android:layout_marginTop="50dp"
     tools:context=".SelectedItemActivity">
 
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+
         android:gravity="center">
+
+
+        <RelativeLayout
+            android:id="@+id/uploadimagelayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp">
+
+
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_face_black_24dp"
+            android:layout_centerHorizontal="true"
+            android:visibility="invisible"
+
+
+
+            />
+
+            <TextView
+                android:id="@+id/uploadimage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/image"
+                android:layout_centerHorizontal="true"
+                android:textColor="#242222"
+                android:backgroundTint="@color/gray"
+                android:textSize="12sp"
+                android:visibility="invisible"
+                android:text="Upload Image"/>
+
+        </RelativeLayout>
+
+
+
+
 
         <TextView
             android:id="@+id/Asset"
@@ -23,6 +64,7 @@
             android:layout_marginBottom="5dp"
             android:background="@drawable/textview"
             android:gravity="center"
+            android:layout_below="@+id/uploadimagelayout"
             android:text="Asset Name"
             android:textColor="#000"
             android:textSize="12sp" />
@@ -61,13 +103,16 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/Assetname"
             android:layout_alignTop="@+id/AmountAssett"
+            android:layout_marginEnd="5dp"
             android:layout_toRightOf="@+id/AmountAssett"
             android:background="@drawable/textview"
+            android:cursorVisible="false"
+            android:focusableInTouchMode="false"
+
+
+            android:inputType="number"
             android:padding="10dp"
             android:paddingStart="10dp"
-            android:inputType="number"
-            android:focusableInTouchMode="false"
-            android:cursorVisible="false"
             android:textColor="#E91E63"
             android:textSize="15sp" />
 
@@ -78,18 +123,11 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/Assetname"
             android:layout_alignBaseline="@+id/AmountAsset"
-            android:layout_marginEnd="10dp"
             android:layout_alignParentRight="true"
-            android:backgroundTint="#00FFFFFF"
+            android:layout_marginEnd="10dp"
             android:background="@drawable/logout"
+            android:backgroundTint="#00FFFFFF"
             android:drawableEnd="@drawable/ic_change" />
-
-
-
-
-
-
-
 
 
         <TextView
@@ -110,15 +148,42 @@
             android:layout_below="@+id/Description"
             android:layout_margin="10dp"
             android:background="#fff"
+            android:cursorVisible="false"
+            android:focusableInTouchMode="false"
             android:padding="10dp"
             android:paddingStart="10dp"
-            android:focusableInTouchMode="false"
-            android:cursorVisible="false"
-            android:text="nothing mentioned.."
+            android:text="Nothing mentioned.."
             android:textDirection="ltr"
             android:textSize="15sp" />
 
 
+        <TextView
+            android:id="@+id/transactionview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/DescriptionEditAsset"
+            android:layout_margin="10dp"
+            android:cursorVisible="false"
+            android:textColor="#000"
+            android:text="Transactions"
+            android:textSize="15sp" />
+
+
+
+        <TextView
+            android:id="@+id/transaction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/transactionview"
+            android:layout_margin="10dp"
+            android:background="#fff"
+            android:cursorVisible="false"
+            android:focusableInTouchMode="false"
+            android:padding="10dp"
+            android:paddingStart="10dp"
+            android:text="No transaction"
+            android:textDirection="ltr"
+            android:textSize="15sp" />
 
 
         <TextView
@@ -127,10 +192,10 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/Description"
             android:layout_alignBaseline="@+id/DescriptionEditAsset"
-            android:layout_marginEnd="10dp"
             android:layout_alignParentRight="true"
-            android:backgroundTint="#00FFFFFF"
+            android:layout_marginEnd="10dp"
             android:background="@drawable/logout"
+            android:backgroundTint="#00FFFFFF"
             android:drawableEnd="@drawable/ic_change" />
 
 
@@ -138,7 +203,7 @@
             android:id="@+id/doneSelected"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_below="@+id/DescriptionEditAsset"
+            android:layout_below="@+id/transaction"
             android:layout_margin="10dp"
             android:background="@drawable/textview"
             android:backgroundTint="#F44336"
@@ -150,4 +215,4 @@
     </RelativeLayout>
 
 
-</RelativeLayout>
+</ScrollView>

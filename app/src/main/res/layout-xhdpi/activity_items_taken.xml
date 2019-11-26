@@ -42,7 +42,7 @@
                 android:layout_alignBaseline="@id/TotalAmountItem"
                 android:textColor="#3F3C3C"
                 android:textSize="15sp"
-                android:fontFamily="cursive"/>
+                />
 
 
 
@@ -85,6 +85,7 @@
             android:layout_height="match_parent"
             android:padding="5dp"
             android:layout_marginBottom="20pt"
+            android:paddingBottom="50dp"
             android:layout_marginTop="51dp">
 
 

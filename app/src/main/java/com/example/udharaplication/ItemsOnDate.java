@@ -1,10 +1,12 @@
 package com.example.udharaplication;
 
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -22,6 +24,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.telephony.PhoneNumberUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,6 +33,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,8 +44,9 @@ import java.util.List;
 
 public class ItemsOnDate extends AppCompatActivity {
 
-    private String PK;
     private static long position = 0;
+    private String Des = "";
+    private String PK;
     private SharedPreferences sharedPreferences;
     private AlertDialog.Builder alert;
     private CoordinatorLayout coordinatorLayout;
@@ -89,26 +97,26 @@ public class ItemsOnDate extends AppCompatActivity {
         intent = getIntent();
         date = intent.getStringExtra("date");
         phone = intent.getStringExtra("phone");
-        PK=intent.getStringExtra("PK");
+        PK = intent.getStringExtra("PK");
 
         enableSwipe();
 
         //   arraylist.clear();
 
 
-
-
-
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View view, int i) {
-                if (i==BottomSheetBehavior.STATE_EXPANDED){
+                if (i == BottomSheetBehavior.STATE_EXPANDED) {
                     floatingActionButton.setImageResource(R.drawable.ic_close_black_24dp);
 
                 }
-                if(i==BottomSheetBehavior.STATE_COLLAPSED){
+                if (i == BottomSheetBehavior.STATE_COLLAPSED) {
 
                     floatingActionButton.setImageResource(R.drawable.ic_add_black_24dp);
+                    ItemName.setText("");
+                    ProductAmount.setText("0");
+                    Description.setText("");
 
                 }
 
@@ -119,16 +127,6 @@ public class ItemsOnDate extends AppCompatActivity {
 
             }
         });
-
-
-
-
-
-
-
-
-
-
 
 
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -155,7 +153,7 @@ public class ItemsOnDate extends AppCompatActivity {
             public void onClick(View v) {
                 ItemNameString = ItemName.getText().toString().trim();
                 ProductAmountString = ProductAmount.getText().toString().trim();
-                DescriptionString = Description.getText().toString().trim();
+                DescriptionString = Description.getText().toString().trim() + "\n";
 
                 if (ItemNameString.isEmpty()) {
                     ItemName.setError("Item Name must be mentioned");
@@ -195,8 +193,7 @@ public class ItemsOnDate extends AppCompatActivity {
                         try {
                             recieved_amount = Integer.valueOf(pop_credit.getText().toString().trim());
 
-                        }
-                        catch (Exception e){
+                        } catch (Exception e) {
 
                             Toast.makeText(ItemsOnDate.this, "Amount is not updated", Toast.LENGTH_SHORT).show();
                         }
@@ -207,26 +204,38 @@ public class ItemsOnDate extends AppCompatActivity {
                             return;
                         }
 
-                        if (recieved_amount > Left) {
+                        if(recieved_amount > Left) {
                             Toast.makeText(ItemsOnDate.this, "check you are receiving more", Toast.LENGTH_SHORT).show();
                             return;
-                        } else {
+                        }
+                        if (recieved_amount==0){
+                            dialog.dismiss();
+                            return;
+                        }
+                        else {
+
+
+                            String DateString = DateFormat.getDateTimeInstance().format(new Date());
+                            DateString = DateString + "  Rs." + recieved_amount + "\n";
+                            if (Des != null) {
+
+                                Des += "RECEIVED ON:" + DateString;
+
+                            } else {
+                                Des = "RECEIVED ON:" + DateString;
+                            }
+                            databaseDates.UpdateTransaction(date, Des);
+
+
                             onStart();
-                            recieved_amount=0;
+                            recieved_amount = 0;
 
 
-                            AlertDialog.Builder alert = new AlertDialog.Builder(ItemsOnDate.this,R.style.Alert);
-                            alert.setTitle("Info");
-                            alert.setIcon(R.drawable.ic_cloud_upload_black_24dp);
-                            alert.setMessage("Before closing application upload your data online by clicking cloud in home page.").show();
-
-
-
-
-                            Vibrator vibrator= (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                             vibrator.vibrate(200);
                             dialog.dismiss();
 
+                            Toast.makeText(ItemsOnDate.this, "updated", Toast.LENGTH_SHORT).show();
 
                         }
                     }
@@ -257,9 +266,14 @@ public class ItemsOnDate extends AppCompatActivity {
         if (insert) {
             onStart();
             databaseDates.upDateTotal(date, (int) getTotal);
-            Vibrator vibrator= (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             vibrator.vibrate(200);
             Toast.makeText(this, "Added", Toast.LENGTH_SHORT).show();
+
+          //   WhatsAppMessage();
+
+
+
         } else {
             Toast.makeText(this, "Not Inserted", Toast.LENGTH_SHORT).show();
         }
@@ -268,19 +282,46 @@ public class ItemsOnDate extends AppCompatActivity {
 
     }
 
+    private void WhatsAppMessage() {
+
+        if(!appInstalledOrNot("com.whatsapp")){
+           // Toast.makeText(this, "Whats app not installed", Toast.LENGTH_SHORT).show();
+        }else{
+
+        }
+
+    }
+
+
+    private boolean appInstalledOrNot(String uri) {
+        PackageManager pm = getPackageManager();
+        boolean app_installed;
+        try {
+            pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
+            app_installed = true;
+        }
+        catch (PackageManager.NameNotFoundException e) {
+            app_installed = false;
+        }
+        return app_installed;
+    }
+
+
+
+
     @Override
     protected void onStart() {
         super.onStart();
 
 
-        Left=0;
+        Left = 0;
         //Recycler Adapter
 
         ItemsTable();
 
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        adapterItems = new AdapterItems(this, arraylist);
+        adapterItems = new AdapterItems(this, arraylist, date);
         recyclerView.setAdapter(adapterItems);
 
         DatesTable();
@@ -293,6 +334,7 @@ public class ItemsOnDate extends AppCompatActivity {
 
         if ((Left == 0) && (getTotal != 0)) {
             databaseDates.UpDatePaid(date, "paid");
+
 
         } else {
             databaseDates.UpDatePaid(date, "not paid");
@@ -315,10 +357,9 @@ public class ItemsOnDate extends AppCompatActivity {
         Cursor cursor = databaseItems.getAllDataDate(date);
 
         if (cursor.getCount() == 0) {
-            Toast.makeText(this, "nothing to show", Toast.LENGTH_SHORT).show();
+          //  Toast.makeText(this, "nothing to show", Toast.LENGTH_SHORT).show();
             return;
-        }
-        else {
+        } else {
 
             while (cursor.moveToNext()) {
 
@@ -346,11 +387,11 @@ public class ItemsOnDate extends AppCompatActivity {
 
     public void DatesTable() {
 
-        Credit_amount=0;
+        Credit_amount = 0;
         dateArraylist.clear();
         Cursor cursor1 = databaseDates.GetUnique(date);
         if (cursor1.getCount() == 0) {
-            Toast.makeText(this, "Nothing to show", Toast.LENGTH_SHORT).show();
+       //     Toast.makeText(this, "Nothing to show", Toast.LENGTH_SHORT).show();
         } else {
 
             while (cursor1.moveToNext()) {
@@ -361,7 +402,8 @@ public class ItemsOnDate extends AppCompatActivity {
                         cursor1.getInt(3),
                         cursor1.getInt(4),
                         cursor1.getString(5),
-                        cursor1.getString(6));
+                        cursor1.getString(6),
+                        cursor1.getString(7));
 
                 dateArraylist.add(constructorDate);
             }
@@ -371,6 +413,8 @@ public class ItemsOnDate extends AppCompatActivity {
                 Credit_amount = recieved_amount + constructorDate.getRECIEVED();
 
             }
+
+            Des = dateArraylist.get(0).getTRANSACTIONS();
 
             databaseDates.upDateRecieve(date, (int) Credit_amount);
 
@@ -460,7 +504,7 @@ public class ItemsOnDate extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         try {
-            Left=0;
+            Left = 0;
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } catch (Exception r) {
 
@@ -470,9 +514,9 @@ public class ItemsOnDate extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        position=linearLayoutManager.findFirstCompletelyVisibleItemPosition();
-        recieved_amount=0;
-        Left=0;
+        position = linearLayoutManager.findFirstCompletelyVisibleItemPosition();
+        recieved_amount = 0;
+        Left = 0;
 
         sharedPreferences = getSharedPreferences("position", MODE_PRIVATE);
 

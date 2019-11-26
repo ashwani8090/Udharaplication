@@ -1,42 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card1"
     android:layout_width="match_parent"
     android:layout_height="80dp"
-    android:layout_margin="0.8dp"
-    android:background="@drawable/textview"
-    android:gravity="center_vertical"
+    app:cardCornerRadius="10dp"
     tools:context=".contactlist"
-    android:backgroundTint="#C3C3C9">
+    android:layout_margin="2dp"
+    android:clickable="true"
+    android:backgroundTint="#C3C3C9"
+    android:focusable="true">
 
-    <TextView
-        android:id="@+id/nameAdapter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
         android:gravity="center_vertical"
-        android:fontFamily="cursive"
-        android:text="@string/name_of_contact"
-        android:textColor="@color/gray"
-        android:textSize="16sp"
+        android:background="@drawable/ripple"
 
-        android:textStyle="bold" />
-
-
-    <TextView
-        android:id="@+id/phoneAdapter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/nameAdapter"
-        android:layout_marginStart="6dp"
-        android:layout_alignLeft="@id/nameAdapter"
-        android:text="@string/phone_number"
-        android:textColor="@color/gray"
-        android:textSize="10sp" />
+        >
 
 
 
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/nameAdapter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:gravity="center_vertical"
+            android:text="@string/name_of_contact"
+            android:textColor="@color/gray"
+            android:textSize="16sp"
+
+            android:textStyle="bold" />
+
+
+        <TextView
+            android:id="@+id/phoneAdapter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/nameAdapter"
+            android:layout_marginStart="6dp"
+            android:layout_alignLeft="@id/nameAdapter"
+            android:text="@string/phone_number"
+            android:textColor="@color/gray"
+            android:textSize="10sp" />
+
+    </RelativeLayout>
+
+
+</android.support.v7.widget.CardView>

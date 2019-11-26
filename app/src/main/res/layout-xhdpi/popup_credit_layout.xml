@@ -8,19 +8,19 @@
     android:layout_margin="5dp"
     android:gravity="center">
 
-   <TextView
-       android:id="@+id/pop_credit"
-       android:layout_width="wrap_content"
-       android:layout_height="50dp"
-       android:textColor="#000"
-       android:text="Amount Recived"
-       android:textStyle="bold"
-       android:gravity="center"
+    <TextView
+        android:id="@+id/pop_credit"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:textColor="#000"
+        android:text="Amount Recived"
+        android:textStyle="bold"
+        android:gravity="center"
 
-       android:textSize="10sp"
-       android:background="@drawable/textview"
-       android:layout_margin="2dp"
-       />
+        android:textSize="10sp"
+        android:background="@drawable/textview"
+        android:layout_margin="2dp"
+        />
     <EditText
         android:id="@+id/pop_credit_edit"
         android:layout_width="match_parent"
@@ -28,7 +28,6 @@
         android:layout_toRightOf="@+id/pop_credit"
         android:background="@drawable/textview"
         android:inputType="number"
-        android:text="0"
         android:hint="Enter amount you recived"
         android:textSize="12sp"
         android:paddingStart="10dp"

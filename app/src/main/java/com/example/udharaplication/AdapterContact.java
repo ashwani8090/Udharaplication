@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -151,7 +152,7 @@ public class AdapterContact extends RecyclerView.Adapter<AdapterContact.ViewHold
     public class ViewHolderContact extends RecyclerView.ViewHolder {
 
         TextView PhoneText, NameText;
-        RelativeLayout card;
+        CardView card;
 
         public ViewHolderContact(@NonNull View itemView) {
             super(itemView);

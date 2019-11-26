@@ -53,11 +53,13 @@
             android:gravity="center"
             android:paddingStart="5dp"
             android:padding="2dp"
-            android:backgroundTint="#DDD8D8"
+            android:drawableTint="#fff"
+            android:backgroundTint="#BF131212"
 
+            android:fontFamily="sans-serif"
             android:background="@drawable/textview"
-            android:textColor="#000"
-            android:drawablePadding="5dp"/>
+            android:textColor="#FAF7F7"
+            android:drawablePadding="0dp"/>
 
 
 
@@ -98,98 +100,98 @@
 
 
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:layout_gravity="bottom"
-    android:orientation="horizontal"
-    android:background="#88FFFFFF"
-   >
-
-
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="#fff"
-        android:padding="2dp"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:background="#88FFFFFF"
         >
 
-        <TextView
-            android:id="@+id/text_recived"
-            android:layout_width="wrap_content"
+
+        <RelativeLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="Recieved : Rs."
-            android:gravity="center"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:layout_marginStart="2dp"
-            android:background="@drawable/textview"
-            android:backgroundTint="#9EFFFFFF"
-            android:textColor="#000"/>
+            android:layout_weight="1"
+            android:background="#fff"
+            android:padding="2dp"
+            >
+
+            <TextView
+                android:id="@+id/text_recived"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Recieved : Rs."
+                android:gravity="center"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_marginStart="2dp"
+                android:background="@drawable/textview"
+                android:backgroundTint="#9EFFFFFF"
+                android:textColor="#000"/>
 
 
 
-        <TextView
-            android:id="@+id/recieved_data"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/recieved_data"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="0"
+                android:gravity="center"
+                android:textSize="15sp"
+                android:textColor="@color/gray"
+                android:layout_toRightOf="@id/text_recived"
+                android:layout_marginStart="5dp"/>
+
+
+        </RelativeLayout>
+
+
+
+
+        <RelativeLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="0"
-            android:gravity="center"
-            android:textSize="15sp"
-            android:textColor="@color/gray"
-            android:layout_toRightOf="@id/text_recived"
-            android:layout_marginStart="5dp"/>
+            android:layout_weight="1"
+            android:background="#fff"
+            android:padding="2dp"
+            >
 
+            <TextView
+                android:id="@+id/text_left"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Left : Rs."
+                android:gravity="center"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_marginStart="2dp"
+                android:backgroundTint="#9EFFFFFF"
 
-    </RelativeLayout>
-
-
-
-
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="#fff"
-        android:padding="2dp"
-        >
-
-        <TextView
-            android:id="@+id/text_left"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Left : Rs."
-            android:gravity="center"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:layout_marginStart="2dp"
-            android:backgroundTint="#9EFFFFFF"
-
-            android:background="@drawable/textview"
-            android:textColor="#000"/>
+                android:background="@drawable/textview"
+                android:textColor="#000"/>
 
 
 
-        <TextView
-            android:id="@+id/left_data"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="0"
-            android:gravity="center"
-            android:textSize="15sp"
-            android:textColor="@color/gray"
-            android:layout_toRightOf="@id/text_left"
-            android:layout_marginStart="5dp"/>
+            <TextView
+                android:id="@+id/left_data"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="0"
+                android:gravity="center"
+                android:textSize="15sp"
+                android:textColor="@color/gray"
+                android:layout_toRightOf="@id/text_left"
+                android:layout_marginStart="5dp"/>
 
 
-    </RelativeLayout>
+        </RelativeLayout>
 
 
 
 
 
-</LinearLayout>
+    </LinearLayout>
 
 
 

@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +20,12 @@ import java.util.List;
 
 public class SelectedItemActivity extends AppCompatActivity {
 
+    private final int PICK_IMAGE_REQUEST = 0;
+    private RelativeLayout uploadimage;
+    private TextView transactions;
+    private String date,Transaction,Descriptiontrans;
+    private DatabaseDates databaseDates;
+    private List<ConstructorDate> dateArraylist=new ArrayList<>();
     private String des="";
     private Integer amount=0;
     private static ColorStateList color = null;
@@ -37,17 +44,39 @@ public class SelectedItemActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_selected_item);
 
+
+        databaseDates=new DatabaseDates(this);
+
+        uploadimage=findViewById(R.id.uploadimagelayout);
         Assetname = findViewById(R.id.Assetname);
         Amount = findViewById(R.id.AmountAsset);
         Description = findViewById(R.id.DescriptionEditAsset);
         Amountwrite=findViewById(R.id.Amountwrite);
         DoneSelected=findViewById(R.id.doneSelected);
         Descriptionwrite=findViewById(R.id.Descriptionwrite);
+        transactions=findViewById(R.id.transaction);
 
         intent = getIntent();
         ID = intent.getStringExtra("ID");
+        date=intent.getStringExtra("Date");
         databaseItems=new DatabaseItems(this);
         color=DoneSelected.getBackgroundTintList();
+
+
+
+        uploadimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent("com.android.camera.action.CROP");
+                // intent.setDataAndType(fileUri, "image/*");
+                intent.setType("image/*");
+
+
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "select Chooser"), PICK_IMAGE_REQUEST);
+
+            }
+        });
 
 
 
@@ -161,6 +190,7 @@ public class SelectedItemActivity extends AppCompatActivity {
         super.onStart();
 
         arraylist.clear();
+        DatesTable();
 
         Cursor cursor=databaseItems.getUniqueAll(ID);
         while (cursor.moveToNext()){
@@ -190,4 +220,56 @@ public class SelectedItemActivity extends AppCompatActivity {
         }
 
     }
+
+
+
+
+    public void DatesTable() {
+
+        dateArraylist.clear();
+        Cursor cursor1 = databaseDates.GetUnique(date);
+        if (cursor1.getCount() == 0) {
+            Toast.makeText(this, "Nothing to show", Toast.LENGTH_SHORT).show();
+        } else {
+
+            while (cursor1.moveToNext()) {
+
+                ConstructorDate constructorDate = new ConstructorDate(cursor1.getString(0),
+                        cursor1.getString(1),
+                        cursor1.getInt(2),
+                        cursor1.getInt(3),
+                        cursor1.getInt(4),
+                        cursor1.getString(5),
+                        cursor1.getString(6),
+                        cursor1.getString(7));
+
+                dateArraylist.add(constructorDate);
+            }
+
+
+
+            Transaction=dateArraylist.get(0).getTRANSACTIONS();
+            if (Transaction!=null){
+
+
+                transactions.setText(""+Transaction);
+            }
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 }

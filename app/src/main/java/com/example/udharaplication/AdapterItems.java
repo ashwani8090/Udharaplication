@@ -24,10 +24,11 @@ public class AdapterItems extends RecyclerView.Adapter<AdapterItems.ViewHolderIt
     private Context context;
     private Intent intent;
     private List<ConstructorItems> list = new ArrayList<>();
-    private String date;
+    private String datepass;
 
-    public AdapterItems(Context context, List<ConstructorItems> list) {
+    public AdapterItems(Context context, List<ConstructorItems> list,String datepass) {
         this.context = context;
+        this.datepass=datepass;
         this.list = list;
     }
 
@@ -52,6 +53,8 @@ public class AdapterItems extends RecyclerView.Adapter<AdapterItems.ViewHolderIt
                 intent = new Intent(context, SelectedItemActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
                 intent.putExtra("ID",list.get(viewHolderItems.getAdapterPosition()).getID());
+
+                intent.putExtra("Date",datepass);
 
 
 

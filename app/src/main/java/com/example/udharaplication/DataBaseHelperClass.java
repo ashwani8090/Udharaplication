@@ -13,6 +13,7 @@ public class DataBaseHelperClass extends SQLiteOpenHelper {
     private static final String PHONE_NO="PHONE";
     private static final String NAME_OF_CONTACT="NAME";
     private static final String PK="PK";
+    private static final  String uri="uri";
 
 
 
@@ -24,7 +25,7 @@ public class DataBaseHelperClass extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        db.execSQL("create table " + TABLE_NAME +" (PK PRIMARY KEY ,PHONE,NAME)");
+        db.execSQL("create table " + TABLE_NAME +" (PK PRIMARY KEY ,PHONE,NAME,uri)");
 
     }
 
@@ -40,12 +41,13 @@ public class DataBaseHelperClass extends SQLiteOpenHelper {
 
 
 
-    public boolean insertData(String Pk,String phone,String name){
+    public boolean insertData(String Pk,String phone,String name,String uripassed){
         SQLiteDatabase db=this.getWritableDatabase();
         ContentValues contentValues=new ContentValues();
         contentValues.put(PHONE_NO,phone);
         contentValues.put(PK,Pk);
         contentValues.put(NAME_OF_CONTACT,name);
+        contentValues.put(uri,uripassed);
         long result=db.insert(TABLE_NAME,null,contentValues);
         if (result==-1) return true;
         else return true;
@@ -55,6 +57,13 @@ public class DataBaseHelperClass extends SQLiteOpenHelper {
     public Cursor getAllData(){
         SQLiteDatabase db=this.getWritableDatabase();
         Cursor cursor=db.rawQuery("select * from "+TABLE_NAME,null);
+        return  cursor;
+    }
+
+
+    public Cursor GetAllName(String name){
+        SQLiteDatabase db=this.getWritableDatabase();
+        Cursor cursor=db.rawQuery("select * from "+TABLE_NAME +" where NAME=?",new String[]{name});
         return  cursor;
     }
 
@@ -78,13 +87,14 @@ public class DataBaseHelperClass extends SQLiteOpenHelper {
     }
 
 
-    public boolean InsertFirebase(String Pk,String phone,String name){
+    public boolean InsertFirebase(String Pk,String phone,String name,String uripassed){
         SQLiteDatabase db=this.getWritableDatabase();
         ContentValues contentValues=new ContentValues();
 
         contentValues.put(PHONE_NO,phone);
         contentValues.put(PK,Pk);
         contentValues.put(NAME_OF_CONTACT,name);
+        contentValues.put(uri,uripassed);
 
 
 

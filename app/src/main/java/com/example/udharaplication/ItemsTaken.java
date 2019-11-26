@@ -259,7 +259,8 @@ public class ItemsTaken extends AppCompatActivity {
                         cursor.getInt(3),
                         cursor.getInt(4),
                         cursor.getString(5),
-                        cursor.getString(6));
+                        cursor.getString(6),
+                        cursor.getString(7));
 
                 arraylist.add(constructorlList);
 
@@ -315,7 +316,8 @@ public class ItemsTaken extends AppCompatActivity {
                                 item.getLEFTP(),
                                 item.getTOTAL(),
                                 item.getPAID(),
-                                item.getPK());
+                                item.getPK(),
+                                item.getTRANSACTIONS());
                         adapterDates.restoreItem(item, position);
                         recyclerView.scrollToPosition(position);
                         onStart();
@@ -370,7 +372,7 @@ public class ItemsTaken extends AppCompatActivity {
         dateArraylist.clear();
         if (cursor1.getCount() == 0) {
             Left = 0;
-            Toast.makeText(this, "Nothing to show", Toast.LENGTH_SHORT).show();
+         //   Toast.makeText(this, "Nothing to show", Toast.LENGTH_SHORT).show();
             return;
         } else {
 
@@ -382,7 +384,8 @@ public class ItemsTaken extends AppCompatActivity {
                         cursor1.getInt(3),
                         cursor1.getInt(4),
                         cursor1.getString(5),
-                        cursor1.getString(6));
+                        cursor1.getString(6),
+                        cursor1.getString(7));
 
                 dateArraylist.add(constructorDate);
             }
@@ -409,7 +412,7 @@ public class ItemsTaken extends AppCompatActivity {
         Cursor cursor = databaseItems.GetAllwithPhone(PK);
 
         if (cursor.getCount() == 0) {
-            Toast.makeText(this, "nothing to show", Toast.LENGTH_SHORT).show();
+          //  Toast.makeText(this, "nothing to show", Toast.LENGTH_SHORT).show();
         } else {
 
             while (cursor.moveToNext()) {

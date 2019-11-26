@@ -30,8 +30,7 @@ public class DatabaseItems extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-
-        db.execSQL("create table " + TABLE_NAME + "( ID  PRIMARY KEY ,DATES,ITEM_NAME,PHONE,AMOUNT INTEGER,DESCRIPTION" + ",PK , FOREIGN KEY(PK) REFERENCES Contacts(PK) )");
+        db.execSQL("create table " + TABLE_NAME + "( ID  PRIMARY KEY ,DATES,ITEM_NAME,PHONE,AMOUNT INTEGER,DESCRIPTION,PK, FOREIGN KEY(PK) REFERENCES Contacts(PK) )");
 
     }
 
@@ -132,6 +131,18 @@ public class DatabaseItems extends SQLiteOpenHelper {
         contentValues.put(AMOUNT,amount);
         contentValues.put(DESCRIPTION,des);
         db.update(TABLE_NAME, contentValues, "ID=?", new String[]{ID});
+        return true;
+
+    }
+
+
+
+    public boolean DesUpdate(String ID,String des ) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(DESCRIPTION,des);
+        db.update(TABLE_NAME, contentValues, "DATES=?", new String[]{ID});
         return true;
 
     }

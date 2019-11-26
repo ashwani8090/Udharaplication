@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "442446267892",
-    "firebase_url": "https://udharaplication.firebaseio.com",
-    "project_id": "udharaplication",
-    "storage_bucket": "udharaplication.appspot.com"
+    "project_number": "502729054923",
+    "firebase_url": "https://udharaplication-e9f90.firebaseio.com",
+    "project_id": "udharaplication-e9f90",
+    "storage_bucket": "udharaplication-e9f90.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:442446267892:android:f6a7069a62d445de",
+        "mobilesdk_app_id": "1:502729054923:android:5f8e5757d27b381cb6194e",
         "android_client_info": {
           "package_name": "com.example.udharaplication"
         }
       },
       "oauth_client": [
         {
-          "client_id": "442446267892-gfctu8qcfa3jj7bq81la2v9sdsgogmdm.apps.googleusercontent.com",
+          "client_id": "502729054923-dkirfenctboal7rbnnn1p9tcquk41s0d.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.udharaplication",
@@ -23,20 +23,20 @@
           }
         },
         {
-          "client_id": "442446267892-sc8u7nkahi3b3o2ocmqd44pq8p650mn2.apps.googleusercontent.com",
+          "client_id": "502729054923-fthrm8557pdja7uilfl5po0un9941i79.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAbA-jjj-wXeWGd-zEloki7TyeT0SwGze0"
+          "current_key": "AIzaSyDcUL-ItHeLa6wW46WNgJEhl1zoqDH7VQs"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "442446267892-sc8u7nkahi3b3o2ocmqd44pq8p650mn2.apps.googleusercontent.com",
+              "client_id": "502729054923-fthrm8557pdja7uilfl5po0un9941i79.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

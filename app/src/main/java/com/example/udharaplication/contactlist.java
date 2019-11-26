@@ -1,24 +1,34 @@
 package com.example.udharaplication;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Dialog;
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.os.Vibrator;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -44,7 +54,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -57,15 +66,17 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 public class contactlist extends AppCompatActivity {
 
-
+    private static final int REQUEST_CODE = 1;
     private static long position = 0;
     public ProgressBar progressBar;
+    private BroadcastReceiver broadcastReceiver;
     private AlertDialog.Builder alert;
     private List<ContactConstructorlList> ContactList = new ArrayList<>();
     private List<ConstructorItems> itemsList = new ArrayList<>();
@@ -75,8 +86,7 @@ public class contactlist extends AppCompatActivity {
     private DatabaseReference firebaseDatabaseContacts;
     private DatabaseReference firebaseDatabaseItems;
     private DatabaseReference firebaseDatabaseDates;
-
-
+    private ImageView imageView;
     private TextView info;
     private SharedPreferences sharedPreferences;
     private PopupMenu popupMenu, popupMenu2;
@@ -101,6 +111,7 @@ public class contactlist extends AppCompatActivity {
     private FloatingActionButton floatingActionButtonAddcontact;
     private EditText Name, PhoneNumber;
     private String PhoneString = "", NameString, DateString;
+    private TextView downloadData;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -127,6 +138,14 @@ public class contactlist extends AppCompatActivity {
         floatingActionButtonAddcontact = findViewById(R.id.floatingActionButtonAddcontact);
         linearLayoutBottomsheet = findViewById(R.id.addcontactBottomsheet);
         bottomSheetBehavior = BottomSheetBehavior.from(linearLayoutBottomsheet);
+        downloadData=findViewById(R.id.download_cloud);
+
+
+
+
+        startService(new Intent(this, NotificationService.class));
+
+
 
         arrayList.clear();
         firebaseAuth = FirebaseAuth.getInstance();
@@ -161,6 +180,16 @@ public class contactlist extends AppCompatActivity {
         }
 
 
+
+        //dowload data code is here
+        downloadData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                downloadData();
+            }
+        });
+
+
         //popupcode
 
         logout.setVisibility(View.VISIBLE);
@@ -172,18 +201,77 @@ public class contactlist extends AppCompatActivity {
         popupMenu.inflate(R.menu.action_online_logout);
 
 
+        //Add contact from device
+
+        Name.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= Search_bar.getRight() - Search_bar.getTotalPaddingRight()) {
+
+
+                        if (ContextCompat.checkSelfPermission(contactlist.this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE);
+                            }
+                        }
+
+
+                        Intent intent = new Intent(Intent.ACTION_PICK,
+                                ContactsContract.Contacts.CONTENT_URI).addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                        startActivityForResult(intent, REQUEST_CODE);
+
+                    }
+                }
+
+
+                return false;
+            }
+        });
+
+
+/********************* profile pic selection code is here**********************************/
+
+
         addContactButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 NameString = Name.getText().toString().trim();
+
                 PhoneString = PhoneNumber.getText().toString().trim();
+
+                String newPhone = "";
+                for (int i = 0; i < PhoneString.length(); i++) {
+
+                    if (PhoneString.charAt(i) != ' ')
+                        newPhone = newPhone + PhoneString.charAt(i);
+
+                }
+                if (newPhone.length() == 10) {
+                    newPhone = "+91" + newPhone;
+                }
+                PhoneString = newPhone.trim();
                 DateString = DateFormat.getDateTimeInstance().format(new Date());
+
+
+                for (ContactConstructorlList constructorlList : arrayList) {
+
+                    if (constructorlList.getPhone().equals(PhoneString) && PhoneString.length() == 13) {
+                        Toast.makeText(contactlist.this,
+                                "Phone Number Already exist for " + constructorlList.getPhone(), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                }
+
 
                 if (NameString.isEmpty()) {
                     Toast.makeText(contactlist.this, "Name must be there", Toast.LENGTH_SHORT).show();
                     return;
-                } else if ((!PhoneString.isEmpty()) && (PhoneString.length() < 10)) {
+                } else if ((!PhoneString.isEmpty()) && (PhoneString.length() != 13)) {
 
 
                     Toast.makeText(contactlist.this, "Phone Number is badly formatted", Toast.LENGTH_SHORT).show();
@@ -194,13 +282,16 @@ public class contactlist extends AppCompatActivity {
 
                     NameString = Name.getText().toString().trim().substring(0, 1).toUpperCase() + Name.getText().toString().trim().substring(1);
 
-                    boolean isInserted = dataBaseHelperClass.insertData(DateString, PhoneString, NameString);
+                    boolean isInserted = dataBaseHelperClass.insertData(DateString, PhoneString, NameString, null);
                     if (isInserted) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                             onStart();
                             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                             Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                             vibrator.vibrate(200);
+                            Name.setText("");
+                            PhoneNumber.setText("");
+
                         }
                         Toast.makeText(contactlist.this, "Added", Toast.LENGTH_SHORT).show();
                     } else {
@@ -218,9 +309,6 @@ public class contactlist extends AppCompatActivity {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //   startActivity(new Intent(contactlist.this, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                //  firebaseAuth.signOut();
                 popupMenu.show();
 
             }
@@ -243,12 +331,13 @@ public class contactlist extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
 
 
-                            dataBaseHelperClass.onUpgrade(dataBaseHelperClass.getWritableDatabase(),1,2);
-                            databaseDates.onUpgrade(databaseDates.getWritableDatabase(),1,2);
-                            databaseItems.onUpgrade(databaseItems.getReadableDatabase(),1,2);
+                            dataBaseHelperClass.onUpgrade(dataBaseHelperClass.getWritableDatabase(), 1, 2);
+                            databaseDates.onUpgrade(databaseDates.getWritableDatabase(), 1, 2);
+                            databaseItems.onUpgrade(databaseItems.getReadableDatabase(), 1, 2);
 
                             startActivity(new Intent(contactlist.this, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             firebaseAuth.signOut();
+                            finish();
                         }
                     }).setNegativeButton("nope", new DialogInterface.OnClickListener() {
                         @Override
@@ -269,12 +358,19 @@ public class contactlist extends AppCompatActivity {
 
                 if (R.id.download == item.getItemId()) {
                     progressBar.setVisibility(View.VISIBLE);
+
+                    DatesTable();
+                    ItemsTable();
+                    BackUpTheData();
+
+
                     OnlineMode();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
                         Handler handler = new Handler();
-                        Toast.makeText(contactlist.this, "loading..", Toast.LENGTH_SHORT).show();
-
+                        if (isNetworkConnected()) {
+                            Toast.makeText(contactlist.this, "loading..", Toast.LENGTH_SHORT).show();
+                        }
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -309,8 +405,6 @@ public class contactlist extends AppCompatActivity {
 
                 if (i == BottomSheetBehavior.STATE_COLLAPSED) {
                     floatingActionButtonAddcontact.setImageResource(R.drawable.addcontact);
-                    Name.setText("");
-                    PhoneNumber.setText("");
 
                 }
 
@@ -360,6 +454,7 @@ public class contactlist extends AppCompatActivity {
                 Search_icon.setVisibility(View.INVISIBLE);
                 Visible_layout.setAnimation(animation);
                 Upload_cloud.setVisibility(View.INVISIBLE);
+                downloadData.setVisibility(View.INVISIBLE);
 
 
             }
@@ -382,6 +477,7 @@ public class contactlist extends AppCompatActivity {
                         Search_bar.setCursorVisible(false);
                         Upload_cloud.setVisibility(View.VISIBLE);
                         Search_icon.setVisibility(View.VISIBLE);
+                        downloadData.setVisibility(View.VISIBLE);
                         Visible_layout.setAnimation(animation2);
                         return true;
                     }
@@ -414,6 +510,9 @@ public class contactlist extends AppCompatActivity {
         });
 
 
+        //Add contact
+
+
         // cloud th information
         Upload_cloud.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -424,7 +523,7 @@ public class contactlist extends AppCompatActivity {
                 DatesTable();
                 ItemsTable();
                 BackUpTheData();
-                Toast.makeText(contactlist.this, "backing up data..requested to on internet", Toast.LENGTH_SHORT).show();
+                Toast.makeText(contactlist.this, "backing up data..Requested to on internet", Toast.LENGTH_SHORT).show();
 
 
             }
@@ -432,6 +531,95 @@ public class contactlist extends AppCompatActivity {
 
 
     }
+
+
+    public void downloadData(){
+
+        progressBar.setVisibility(View.VISIBLE);
+
+        DatesTable();
+        ItemsTable();
+        BackUpTheData();
+
+
+        OnlineMode();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+
+            Handler handler = new Handler();
+            if (isNetworkConnected()) {
+                Toast.makeText(contactlist.this, "loading..", Toast.LENGTH_SHORT).show();
+            }
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    onStart();
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+            }, 7000);
+        }
+
+    }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_CODE:
+
+                if (resultCode == Activity.RESULT_OK) {
+
+                    try {
+                        int IDresultHolder, TempContactID;
+
+
+                        Uri uri = data.getData();
+
+                        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+
+                        if (cursor.moveToFirst()) {
+
+                            Name.setText(String.format("%s", cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))));
+
+                            IDresultHolder = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)));
+
+                            TempContactID = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID)));
+
+
+                            if (IDresultHolder == 1) {
+
+                                Cursor cursor2 = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI
+                                        , null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + TempContactID, null, null);
+
+                                while (cursor2.moveToNext()) {
+
+                                    PhoneNumber.setText(String.format("%s", cursor2.getString(cursor2.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))));
+                                }
+                                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+                            }
+
+                        }
+                    } catch (Exception e) {
+
+                        Toast.makeText(this, "Change permission allow to read contacts", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+                break;
+
+        }
+
+
+    }
+
+    public void showSelectedNumber(int type, String number) {
+        Toast.makeText(this, type + ": " + number, Toast.LENGTH_LONG).show();
+    }
+
 
     private void FilterSearch(String search) {
 
@@ -469,7 +657,7 @@ public class contactlist extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
 
-                        dataBaseHelperClass.insertData(item.getPk(), item.getPhone(), item.getName());
+                        dataBaseHelperClass.insertData(item.getPk(), item.getPhone(), item.getName(), item.getUri());
                         adapterContact.restoreItem(item, position);
                         recyclerView.scrollToPosition(position);
 
@@ -528,6 +716,7 @@ public class contactlist extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+
         arrayList.clear();
 
         try {
@@ -548,7 +737,8 @@ public class contactlist extends AppCompatActivity {
                 ContactConstructorlList constructorlList = new
                         ContactConstructorlList(cursor.getString(0),
                         cursor.getString(1),
-                        cursor.getString(2));
+                        cursor.getString(2),
+                        cursor.getString(3));
                 arrayList.add(constructorlList);
             }
             for (ContactConstructorlList constructorlList : arrayList) {
@@ -590,6 +780,9 @@ public class contactlist extends AppCompatActivity {
 
 
         }
+        broadcastReceiver = new InternetBroadcast(contactlist.this);
+        IntentFilter intentFilter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
+        registerReceiver(broadcastReceiver, intentFilter);
 
 
     }
@@ -601,9 +794,10 @@ public class contactlist extends AppCompatActivity {
             stringList.clear();
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
-            logout.setVisibility(View.INVISIBLE);
+            logout.setVisibility(View.VISIBLE);
             info.setVisibility(View.VISIBLE);
             Upload_cloud.setVisibility(View.VISIBLE);
+            downloadData.setVisibility(View.VISIBLE);
 
 
         } catch (Exception e) {
@@ -624,6 +818,9 @@ public class contactlist extends AppCompatActivity {
 
         editor.putLong("position1", position).apply();
 
+        stopService(new Intent(this,NotificationService.class));
+
+
 
     }
 
@@ -641,90 +838,93 @@ public class contactlist extends AppCompatActivity {
     }
 
     public void BackUpTheData() {
+        if (!isNetworkConnected()) {
+            AlertDialog.Builder error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
+            error.setTitle("Error");
+            error.setIcon(R.drawable.ic_error_outline_black_24dp);
+
+            error.setMessage("Check your internet connection");
+            error.show();
+            progressBar.setVisibility(View.INVISIBLE);
+
+        } else {
+            for (ContactConstructorlList constructorlList : arrayList) {
 
 
-        for (ContactConstructorlList constructorlList : arrayList) {
+                firebaseDatabaseContacts.child("" + constructorlList.getPk()).
+                        setValue(constructorlList).
+                        addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isComplete()) {
 
-            firebaseDatabaseContacts.child("" + constructorlList.getPk()).setValue(constructorlList).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                    } else {
+                                    progressBar.setVisibility(View.INVISIBLE);
 
-                        progressBar.setVisibility(View.INVISIBLE);
+                                }
+
+
+                            }
+                        });
+
+
+            }
+
+
+            for (ConstructorDate constructorDate : dateArraylist) {
+
+                firebaseDatabaseDates.child("" + constructorDate.getDATE()).setValue(constructorDate).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            progressBar.setVisibility(View.INVISIBLE);
+
+                        } else {
+                            progressBar.setVisibility(View.INVISIBLE);
+                            Toast.makeText(contactlist.this, "Check internet", Toast.LENGTH_SHORT).show();
+
+
+                        }
                     }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    AlertDialog.Builder error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
-                    error.setMessage("Check internet connection...");
-                    error.show();
-
-                    progressBar.setVisibility(View.INVISIBLE);
-
-                }
-            });
-
-
-        }
-
-
-        for (ConstructorDate constructorDate : dateArraylist) {
-
-            firebaseDatabaseDates.child("" + constructorDate.getDATE()).setValue(constructorDate).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-
-                    } else {
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
                         progressBar.setVisibility(View.INVISIBLE);
-                        Toast.makeText(contactlist.this, "Check internet", Toast.LENGTH_SHORT).show();
 
                     }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    progressBar.setVisibility(View.INVISIBLE);
-                }
-            });
+                });
 
 
-        }
+            }
 
-        for (ConstructorItems constructorItems : itemsList) {
+            for (ConstructorItems constructorItems : itemsList) {
 
-            firebaseDatabaseItems.child("" + constructorItems.getID()).setValue(constructorItems).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
+                firebaseDatabaseItems.child("" + constructorItems.getID()).
+                        setValue(constructorItems).
+                        addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
 
-                        progressBar.setVisibility(View.INVISIBLE);
-                        Toast.makeText(contactlist.this, " Uploading..", Toast.LENGTH_SHORT).show();
-                    } else {
+                                    progressBar.setVisibility(View.INVISIBLE);
+                                    Toast.makeText(contactlist.this, " Uploading..", Toast.LENGTH_SHORT).show();
+                                }
+
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
                         AlertDialog.Builder error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
-                        error.setMessage("Error..Check internet connection");
-                        error.show();
+                        error.setTitle("Error");
+                        error.setIcon(R.drawable.ic_error_outline_black_24dp);
+                        error.setMessage("" + e.getMessage()).show();
                         progressBar.setVisibility(View.INVISIBLE);
-
                     }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    AlertDialog.Builder error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
-                    error.setTitle("Error");
-                    error.setIcon(R.drawable.ic_error_outline_black_24dp);
-                    error.setMessage("" + e.getMessage()).show();
-                    progressBar.setVisibility(View.INVISIBLE);
-                }
-            });
+                });
 
+
+            }
 
         }
-
-
     }
 
 
@@ -775,7 +975,8 @@ public class contactlist extends AppCompatActivity {
                         cursor1.getInt(3),
                         cursor1.getInt(4),
                         cursor1.getString(5),
-                        cursor1.getString(6));
+                        cursor1.getString(6),
+                        cursor1.getString(7));
 
                 dateArraylist.add(constructorDate);
             }
@@ -789,120 +990,142 @@ public class contactlist extends AppCompatActivity {
     public void OnlineMode() {
 
 
-        ContactList.clear();
-        itemsList.clear();
-        dateArraylist.clear();
-        firebaseDatabaseContacts.child("").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        if (!isNetworkConnected()) {
+            AlertDialog.Builder error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
+            error.setTitle("Error");
+            error.setIcon(R.drawable.ic_error_outline_black_24dp);
 
-                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+            error.setMessage("Check your internet connection");
 
-                    ContactConstructorlList constructorlList = dataSnapshot1.getValue(ContactConstructorlList.class);
+            error.show();
+            progressBar.setVisibility(View.INVISIBLE);
 
-                    ContactList.add(constructorlList);
-
-                }
+        } else {
 
 
-                for (ContactConstructorlList constructorlList : ContactList) {
-                    dataBaseHelperClass.InsertFirebase(
-                            constructorlList.getPk(),
-                            constructorlList.getPhone(),
-                            constructorlList.getName());
+            ContactList.clear();
+            itemsList.clear();
+            dateArraylist.clear();
+            firebaseDatabaseContacts.child("").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+
+                        ContactConstructorlList constructorlList = dataSnapshot1.getValue(ContactConstructorlList.class);
+
+                        ContactList.add(constructorlList);
+
+                    }
 
 
-                }
+                    for (ContactConstructorlList constructorlList : ContactList) {
+
+                        dataBaseHelperClass.InsertFirebase(
+                                constructorlList.getPk(),
+                                constructorlList.getPhone(),
+                                constructorlList.getName(),
+                                constructorlList.getUri());
 
 
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                AlertDialog.Builder error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
-                error.setTitle("Error");
-                error.setIcon(R.drawable.ic_error_outline_black_24dp);
-                error.setMessage("" + databaseError.getMessage()).show();
-            }
-        });
-
-
-        firebaseDatabaseItems.child("").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-
-                    ConstructorItems constructorItems = dataSnapshot1.getValue(ConstructorItems.class);
-
-                    itemsList.add(constructorItems);
-
-                }
-
-                for (ConstructorItems constructorlList : itemsList) {
-                    databaseItems.InsertAfterDeleteItem(
-                            constructorlList.getID(),
-                            constructorlList.getDATES(),
-                            constructorlList.getITEM_NAME(),
-                            constructorlList.getPHONE(),
-                            constructorlList.getAMOUNT(),
-                            constructorlList.getDESCRIPTION(),
-                            constructorlList.getPk()
-                    );
+                    }
 
 
                 }
 
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                AlertDialog.Builder error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
-                error.setTitle("Error");
-                error.setIcon(R.drawable.ic_error_outline_black_24dp);
-                error.setMessage("" + databaseError.getMessage()).show();
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+            });
 
 
-        firebaseDatabaseDates.child("").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            firebaseDatabaseItems.child("").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
 
-                    ConstructorDate constructorDate = dataSnapshot1.getValue(ConstructorDate.class);
+                        ConstructorItems constructorItems = dataSnapshot1.getValue(ConstructorItems.class);
 
-                    dateArraylist.add(constructorDate);
+                        itemsList.add(constructorItems);
+
+                    }
+
+                    for (ConstructorItems constructorlList : itemsList) {
+                        databaseItems.InsertAfterDeleteItem(
+                                constructorlList.getID(),
+                                constructorlList.getDATES(),
+                                constructorlList.getITEM_NAME(),
+                                constructorlList.getPHONE(),
+                                constructorlList.getAMOUNT(),
+                                constructorlList.getDESCRIPTION(),
+                                constructorlList.getPk()
+                        );
+
+
+                    }
 
                 }
 
-                for (ConstructorDate constructorDate : dateArraylist) {
-                    databaseDates.InsertAfterDelete(constructorDate.getDATE(),
-                            constructorDate.getPHONE(),
-                            constructorDate.getRECIEVED(),
-                            constructorDate.getLEFTP(),
-                            constructorDate.getTOTAL(),
-                            constructorDate.getPAID(),
-                            constructorDate.getPK());
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                    progressBar.setVisibility(View.INVISIBLE);
+
+                }
+            });
+
+
+            firebaseDatabaseDates.child("").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+
+                        ConstructorDate constructorDate = dataSnapshot1.getValue(ConstructorDate.class);
+
+                        dateArraylist.add(constructorDate);
+
+                    }
+
+                    for (ConstructorDate constructorDate : dateArraylist) {
+                        databaseDates.InsertAfterDelete(constructorDate.getDATE(),
+                                constructorDate.getPHONE(),
+                                constructorDate.getRECIEVED(),
+                                constructorDate.getLEFTP(),
+                                constructorDate.getTOTAL(),
+                                constructorDate.getPAID(),
+                                constructorDate.getPK(),
+                                constructorDate.getTRANSACTIONS());
+
+
+                    }
 
                 }
 
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    try {
+                        AlertDialog.Builder error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
+                        error.setTitle("Error");
+                        error.setIcon(R.drawable.ic_error_outline_black_24dp);
+                        error.setMessage("" + databaseError.getMessage()).show();
+                        progressBar.setVisibility(View.INVISIBLE);
+                    } catch (Exception e) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                AlertDialog.Builder error = new AlertDialog.Builder(contactlist.this, R.style.Alert);
-                error.setTitle("Error");
-                error.setIcon(R.drawable.ic_error_outline_black_24dp);
-                error.setMessage("" + databaseError.getMessage()).show();
-            }
-        });
+                    }
+                }
+            });
 
 
+        }
+    }
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null;
     }
 
     public class sortByName implements Comparator<ContactConstructorlList> {
@@ -913,7 +1136,6 @@ public class contactlist extends AppCompatActivity {
             return o1.getName().compareTo(o2.getName());
         }
     }
-
 
 }
 

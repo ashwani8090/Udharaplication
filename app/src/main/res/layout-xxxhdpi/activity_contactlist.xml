@@ -8,14 +8,7 @@
     tools:context=".contactlist">
 
 
-    <ProgressBar
-        android:id="@+id/cloudprogress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="invisible"
-        style="@style/Alert"
-        />
+
 
 
 
@@ -67,6 +60,15 @@
                     android:layout_alignBaseline="@id/info"/>
 
 
+                <TextView
+                    android:id="@+id/download_cloud"
+                    android:layout_marginStart="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_file_download_black_24dp"
+                    android:layout_toRightOf="@id/cloud"
+                    android:drawableTint="#F44336"
+                    android:layout_alignBaseline="@id/info"/>
 
 
                 <TextView
@@ -124,6 +126,7 @@
             android:layout_marginTop="50dp"
             android:layout_marginEnd="5dp"
             android:paddingStart="5dp"
+            android:paddingBottom="10dp"
             android:paddingTop="10dp"
             android:scrollbars="vertical"
 
@@ -148,6 +151,15 @@
 
         <include layout="@layout/bottomsheetaddcontact" />
 
+
+        <ProgressBar
+            android:id="@+id/cloudprogress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="invisible"
+            style="@style/Alert"
+            />
 
     </android.support.design.widget.CoordinatorLayout>
 
